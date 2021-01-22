@@ -1,0 +1,35 @@
+body {
+    width: 1280px;
+    height: 800px;
+}
+
+h1 {
+    text-align: center;
+}
+#h21 {
+    position: absolute;
+    left: 90%;
+    top: 10px;
+}
+#h22 {
+    position: absolute;
+    left: 90%;
+    top: 35px;
+}
+#card-container {
+    width: 100%;
+    height: 700px;
+}
+
+#unten {
+    display: inline-block;
+}
+#eins:hover{
+    cursor: pointer;
+}
+#zwei:hover{
+    cursor: pointer;
+}
+#drei:hover{
+    cursor: pointer;
+}
