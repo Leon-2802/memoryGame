@@ -1,6 +1,18 @@
 body {
     width: 1280px;
     height: 800px;
+    background-color: #333333;
+    color: #d9d9d9;
+}
+img {
+    width: 130px;
+    height: 130px;
+}
+img:hover {
+    width: 129px;
+    height: 129px;
+    border: 1px solid #b30000;
+    cursor: pointer;
 }
 
 h1 {
@@ -16,11 +28,48 @@ h1 {
     left: 90%;
     top: 35px;
 }
-#card-container {
+#game-area {
     width: 100%;
     height: 700px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.isHidden {
+    display: none !important;
+}
+/*Felder für die verschiedenen Schwierigkeitsgrade:*/
+#easy-cards {
+    display: flex;
+    width: 620px;
+    height: 300px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    grid-row-gap: 20px;
+}
+#medium-cards {
+    display: flex;
+    width: 1200px;
+    height: 290px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    grid-row-gap: 10px;
+    grid-column-gap: 5px;
+}
+#hard-cards {
+    display: flex;
+    width: 1200px;
+    height: 550px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    grid-row-gap: 10px;
+    grid-column-gap: 5px;
 }
 
+/*Buttons und Text unterhalb des Spielfelds:*/
 #unten {
     display: inline-block;
 }

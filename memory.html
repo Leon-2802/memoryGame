@@ -6,15 +6,25 @@
     <title>Memory Game</title>
     <link rel="stylesheet" href="memory.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css">
+    <script src="memory.js" defer></script>
 </head>
 <body>
     <h1>Memory Game</h1>
     <h2 id="h21">P vs Com</h2><h2 id="h22">P1 vs P2</h2>
-    <div id="card-container">
+    <div id="game-area">
+        <div id="easy-cards" class="isHidden">
+        </div>
+        <div id="medium-cards" class="isHidden">
+        </div>
+        <div id="hard-cards" class="isHidden">
+        </div>
     </div>
     <div id="unten">
         <h3 id="player">Player</h3><h3 id="p-number">0</h3>
-        <h3 id="Stufe">Stufe</h3><h3 id="eins">1</h3><h3 id="zwei">2</h3><h3 id="drei">3</h3>
+        <h3 id="Stufe">Stufe</h3>
+        <button id="einfach">Einfach</button>
+        <button id="normal">Normal</button>
+        <button id="schwer">Schwer</button>
         <h3 id="new-game">New Game</h3>
         <h3 id="com">Com</h3><h3 id="c-number">0</h3>
     </div>
