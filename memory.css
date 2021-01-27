@@ -19,6 +19,10 @@ img:hover {
     opacity: 60;
 }
 
+.invisible {
+    visibility: hidden;
+}
+
 h1 {
     text-align: center;
 }

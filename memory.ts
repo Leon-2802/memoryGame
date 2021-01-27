@@ -55,7 +55,7 @@ interface CardBlueprint {
 }
 
 var storeFlippedCards: string [] = [];
-var storeImgClass: string [] = [];
+var storeImgClass: HTMLImageElement [] = [];
 
 //Array durchmischen (wie funktioniert es?):
 function shuffleArray(array: Array<CardBlueprint>): void {
@@ -150,7 +150,7 @@ function pushCardsToDom(): void {
             if (firstFlipped == false || secondFlipped == false) {
                 newImgMedium.src = mediumDeck[parseFloat(newImgMedium.className)].source;
                 storeFlippedCards.push(newImgMedium.src);
-                storeImgClass.push(newImgMedium.className);
+                storeImgClass.push(newImgMedium);
                 if (firstFlipped == true) {
                     secondFlipped = true;
                 }
@@ -162,8 +162,10 @@ function pushCardsToDom(): void {
             if (firstFlipped == true && secondFlipped == true) {
                 if (storeFlippedCards[0] === storeFlippedCards[1]) {
                     setTimeout(function(): void {
-                        document.querySelector("." + storeImgClass[0] + "").setAttribute("style", "opacity: 0");
-                        document.querySelector("." + storeImgClass[1] + "").setAttribute("style", "opacity: 0");
+                        // document.querySelector("." + storeImgClass[0] + "").setAttribute("style", "opacity: 0");
+                        // document.querySelector("." + storeImgClass[1] + "").setAttribute("style", "opacity: 0");
+                        storeImgClass[0].classList.add("invisible");
+                        storeImgClass[1].classList.add("invisible");
                         storeImgClass.length = 0;
                         storeFlippedCards.length = 0;
                         firstFlipped = false;
@@ -172,7 +174,10 @@ function pushCardsToDom(): void {
                 }
                 else {
                     setTimeout(function(): void {
-                        newImgMedium.src = backsideSource;
+                        storeImgClass[0].src = backsideSource;
+                        storeImgClass[1].src = backsideSource;
+                        storeImgClass = [];
+                        // newImgMedium.src = backsideSource;
                         storeImgClass.length = 0;
                         storeFlippedCards.length = 0;
                         firstFlipped = false;

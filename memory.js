@@ -136,7 +136,7 @@ function pushCardsToDom() {
             if (firstFlipped == false || secondFlipped == false) {
                 newImgMedium_1.src = mediumDeck[parseFloat(newImgMedium_1.className)].source;
                 storeFlippedCards.push(newImgMedium_1.src);
-                storeImgClass.push(newImgMedium_1.className);
+                storeImgClass.push(newImgMedium_1);
                 if (firstFlipped == true) {
                     secondFlipped = true;
                 }
@@ -148,8 +148,10 @@ function pushCardsToDom() {
             if (firstFlipped == true && secondFlipped == true) {
                 if (storeFlippedCards[0] === storeFlippedCards[1]) {
                     setTimeout(function () {
-                        document.querySelector("." + storeImgClass[0] + "").setAttribute("style", "opacity: 0");
-                        document.querySelector("." + storeImgClass[1] + "").setAttribute("style", "opacity: 0");
+                        // document.querySelector("." + storeImgClass[0] + "").setAttribute("style", "opacity: 0");
+                        // document.querySelector("." + storeImgClass[1] + "").setAttribute("style", "opacity: 0");
+                        storeImgClass[0].classList.add("invisible");
+                        storeImgClass[1].classList.add("invisible");
                         storeImgClass.length = 0;
                         storeFlippedCards.length = 0;
                         firstFlipped = false;
@@ -158,7 +160,10 @@ function pushCardsToDom() {
                 }
                 else {
                     setTimeout(function () {
-                        newImgMedium_1.src = backsideSource;
+                        storeImgClass[0].src = backsideSource;
+                        storeImgClass[1].src = backsideSource;
+                        storeImgClass = [];
+                        // newImgMedium.src = backsideSource;
                         storeImgClass.length = 0;
                         storeFlippedCards.length = 0;
                         firstFlipped = false;
