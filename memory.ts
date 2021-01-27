@@ -223,7 +223,7 @@ function nextGame(): void {
         hardContainer.innerHTML = "";
         hardContainer.classList.add("isHidden");
         stufe3.setAttribute("style", "color: black");
-        medium = false;
+        hard = false;
     }
 }
 
