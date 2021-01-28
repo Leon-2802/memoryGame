@@ -6,7 +6,10 @@ var easyContainer = document.querySelector("#easy-cards");
 var mediumContainer = document.querySelector("#medium-cards");
 var hardContainer = document.querySelector("#hard-cards");
 var newGame = document.querySelector("#new-game");
-//????? Warum lädt der window.eventlistener meine deklarationen nicht?!
+var playerPoints = document.querySelector("#p-number");
+var comPoints = document.querySelector("#c-number");
+//Quelle für die Kartenrückseiten:
+var backsideSource = "images/cards_background.png";
 //Booleans für die Schwierigkeiten:
 var easy = false;
 var medium = false;
@@ -16,8 +19,16 @@ var lockDifficulty = false;
 var firstFlipped = false;
 var secondFlipped = false;
 var flipBack = false;
+var comsTurn = false;
+var playerScored = false;
+var comScored = false;
 //Counter für Unterscheiden der Kartenrückseiten:
 var giveClass = 0;
+//Counter für Punktevergabe:
+var playerCounter = 0;
+playerPoints.innerHTML = playerCounter.toString();
+var comCounter = 0;
+comPoints.innerHTML = comCounter.toString();
 //Event-Listener für die verschiedenen Schalter:
 //Schwierigkeitswahl:
 stufe1.addEventListener("click", function () {
@@ -42,8 +53,9 @@ stufe3.addEventListener("click", function () {
 newGame.addEventListener("click", function () {
     nextGame();
 });
-var storeFlippedCards = [];
-var storeImgClass = [];
+var storeImg = [];
+var storeSource = [];
+var storeSelected = [];
 //Array durchmischen (wie funktioniert es?):
 function shuffleArray(array) {
     var _a;
@@ -89,40 +101,52 @@ function createCarddeck() {
 }
 //Rückseiten in den Dom laden
 function pushCardsToDom() {
-    var backsideSource = "images/cards_background.png";
     if (easy == true) {
         var newImg_1 = document.createElement("img");
         newImg_1.src = backsideSource;
         newImg_1.classList.add(giveClass.toString());
+        storeImg.push(newImg_1);
         giveClass++;
         // newImg.getAttribute("key") == andersImgt.getAttribute("key");
         easyContainer.appendChild(newImg_1);
         newImg_1.addEventListener("click", function () {
-            if (firstFlipped == false || secondFlipped == false) {
-                //In beiden Aktionen wird der Klassenname des newImg Elements genommen um das zugehörige Objekt im Array zu erreichen, dazu wird parseFloat benötigt
-                //da man den Klassenname (String) zu einem Float ändern muss.
-                newImg_1.setAttribute("key", easyDeck[parseFloat(newImg_1.className)].key.toString());
-                newImg_1.src = easyDeck[parseFloat(newImg_1.className)].source;
-                // storeFlippedCards.push(newImg.src);
-                if (firstFlipped == true) {
-                    secondFlipped = true;
+            if (comsTurn == false) {
+                if (firstFlipped == false || secondFlipped == false) {
+                    newImg_1.src = easyDeck[parseFloat(newImg_1.className)].source;
+                    storeSource.push(newImg_1.src);
+                    storeSelected.push(newImg_1);
+                    if (firstFlipped == true) {
+                        secondFlipped = true;
+                    }
+                    firstFlipped = true;
+                    checkForPairsEasy();
                 }
-                firstFlipped = true;
-                checkForPairsEasy();
             }
         });
         function checkForPairsEasy() {
             if (firstFlipped == true && secondFlipped == true) {
-                if (storeFlippedCards[0] === storeFlippedCards[1]) {
-                    newImg_1.setAttribute("style", "opacity: 0");
-                    firstFlipped = false;
-                    secondFlipped = false;
+                comsTurn = true;
+                if (storeSource[0] === storeSource[1]) {
+                    setTimeout(function () {
+                        storeSelected[0].classList.add("invisible");
+                        storeSelected[1].classList.add("invisible");
+                        playerScored = true;
+                        givePoints();
+                    }, 2000);
                 }
                 else {
-                    newImg_1.src = backsideSource;
+                    setTimeout(function () {
+                        storeSelected[0].src = backsideSource;
+                        storeSelected[1].src = backsideSource;
+                    }, 2000);
+                }
+                setTimeout(function () {
+                    storeSelected.length = 0;
+                    storeSource.length = 0;
                     firstFlipped = false;
                     secondFlipped = false;
-                }
+                    comPlays();
+                }, 3000);
             }
         }
     }
@@ -130,46 +154,44 @@ function pushCardsToDom() {
         var newImgMedium_1 = document.createElement("img");
         newImgMedium_1.src = backsideSource;
         newImgMedium_1.classList.add(giveClass.toString());
+        storeImg.push(newImgMedium_1);
         giveClass++;
         mediumContainer.appendChild(newImgMedium_1);
         newImgMedium_1.addEventListener("click", function () {
-            if (firstFlipped == false || secondFlipped == false) {
-                newImgMedium_1.src = mediumDeck[parseFloat(newImgMedium_1.className)].source;
-                storeFlippedCards.push(newImgMedium_1.src);
-                storeImgClass.push(newImgMedium_1);
-                if (firstFlipped == true) {
-                    secondFlipped = true;
+            if (comsTurn == false) {
+                if (firstFlipped == false || secondFlipped == false) {
+                    newImgMedium_1.src = mediumDeck[parseFloat(newImgMedium_1.className)].source;
+                    storeSource.push(newImgMedium_1.src);
+                    storeSelected.push(newImgMedium_1);
+                    if (firstFlipped == true) {
+                        secondFlipped = true;
+                    }
+                    firstFlipped = true;
+                    checkForPairsMedium();
                 }
-                firstFlipped = true;
-                checkForPairsMedium();
             }
         });
         function checkForPairsMedium() {
             if (firstFlipped == true && secondFlipped == true) {
-                if (storeFlippedCards[0] === storeFlippedCards[1]) {
+                if (storeSource[0] === storeSource[1]) {
                     setTimeout(function () {
-                        // document.querySelector("." + storeImgClass[0] + "").setAttribute("style", "opacity: 0");
-                        // document.querySelector("." + storeImgClass[1] + "").setAttribute("style", "opacity: 0");
-                        storeImgClass[0].classList.add("invisible");
-                        storeImgClass[1].classList.add("invisible");
-                        storeImgClass.length = 0;
-                        storeFlippedCards.length = 0;
-                        firstFlipped = false;
-                        secondFlipped = false;
+                        storeSelected[0].classList.add("invisible");
+                        storeSelected[1].classList.add("invisible");
                     }, 2000);
                 }
                 else {
                     setTimeout(function () {
-                        storeImgClass[0].src = backsideSource;
-                        storeImgClass[1].src = backsideSource;
-                        storeImgClass = [];
-                        // newImgMedium.src = backsideSource;
-                        storeImgClass.length = 0;
-                        storeFlippedCards.length = 0;
-                        firstFlipped = false;
-                        secondFlipped = false;
+                        storeSelected[0].src = backsideSource;
+                        storeSelected[1].src = backsideSource;
                     }, 2000);
                 }
+                setTimeout(function () {
+                    storeSelected.length = 0;
+                    storeSource.length = 0;
+                    firstFlipped = false;
+                    secondFlipped = false;
+                    comPlays();
+                }, 3000);
             }
         }
     }
@@ -177,6 +199,7 @@ function pushCardsToDom() {
         var newImgHard = document.createElement("img");
         newImgHard.src = backsideSource;
         newImgHard.classList.add(giveClass.toString());
+        storeImg.push(newImgHard);
         giveClass++;
         hardContainer.appendChild(newImgHard);
         // newImgHard.addEventListener("click", function(): void {
@@ -184,14 +207,60 @@ function pushCardsToDom() {
         // });
     }
 }
+function comPlays() {
+    var firstImage;
+    var secondImage;
+    if (easy == true) {
+        storeImg[0].src = easyDeck[parseFloat(storeImg[0].className)].source;
+        storeSource.push(storeImg[0].src);
+        storeSelected.push(storeImg[0]);
+        //Zweite Karte:
+        setTimeout(function () {
+            storeImg[1].src = easyDeck[parseFloat(storeImg[1].className)].source;
+            storeSource.push(storeImg[1].src);
+            storeSelected.push(storeImg[1]);
+            setTimeout(function () {
+                checkPairsEasy();
+            }, 3000);
+        }, 1000);
+        function checkPairsEasy() {
+            if (storeSource[0] === storeSource[1]) {
+                storeSelected[0].classList.add("invisible");
+                storeSelected[1].classList.add("invisible");
+            }
+            else {
+                storeSelected[0].src = backsideSource;
+                storeSelected[1].src = backsideSource;
+            }
+            storeSelected.length = 0;
+            storeSource.length = 0;
+        }
+        // Spieler wieder dran
+        setTimeout(function () {
+            comsTurn = false;
+        }, 5000);
+    }
+}
+function givePoints() {
+    if (playerScored == true) {
+        playerCounter++;
+        playerPoints.innerHTML = playerCounter.toString();
+    }
+}
 //Neues Game starten: booleans und numbers auf ursprünglichen Wert zurücksetzen; divs leer räumen; divs wieder verstecken; Farbe des zuvor geklickten Buttons zurück zu Standard
 function nextGame() {
     lockDifficulty = false;
     firstFlipped = false;
     secondFlipped = false;
-    storeFlippedCards.length = 0;
-    storeImgClass.length = 0;
+    comsTurn = false;
+    storeSource.length = 0;
+    storeSelected.length = 0;
+    storeImg.length = 0;
     giveClass = 0;
+    playerCounter = 0;
+    playerPoints.innerHTML = playerCounter.toString();
+    comCounter = 0;
+    comPoints.innerHTML = comCounter.toString();
     if (easy == true) {
         easyContainer.innerHTML = "";
         easyContainer.classList.add("isHidden");

@@ -6,8 +6,11 @@ var easyContainer: HTMLElement = document.querySelector("#easy-cards");
 var mediumContainer: HTMLElement = document.querySelector("#medium-cards");
 var hardContainer: HTMLElement = document.querySelector("#hard-cards");
 var newGame: HTMLElement = document.querySelector("#new-game");
+var playerPoints: HTMLElement = document.querySelector("#p-number");
+var comPoints: HTMLElement = document.querySelector("#c-number");
 
-//????? Warum lädt der window.eventlistener meine deklarationen nicht?!
+//Quelle für die Kartenrückseiten:
+var backsideSource: string = "images/cards_background.png";
 
 //Booleans für die Schwierigkeiten:
 var easy: boolean = false;
@@ -18,9 +21,17 @@ var lockDifficulty: boolean = false;
 var firstFlipped: boolean = false;
 var secondFlipped: boolean = false;
 var flipBack: boolean = false;
+var comsTurn: boolean = false;
+var playerScored: boolean = false;
+var comScored: boolean = false;
 
 //Counter für Unterscheiden der Kartenrückseiten:
 var giveClass: number = 0;
+//Counter für Punktevergabe:
+var playerCounter: number = 0;
+playerPoints.innerHTML = playerCounter.toString();
+var comCounter: number = 0;
+comPoints.innerHTML = comCounter.toString();
 
 //Event-Listener für die verschiedenen Schalter:
 //Schwierigkeitswahl:
@@ -54,8 +65,9 @@ interface CardBlueprint {
     key: number;
 }
 
-var storeFlippedCards: string [] = [];
-var storeImgClass: HTMLImageElement [] = [];
+var storeImg: HTMLImageElement [] = [];
+var storeSource: string [] = [];
+var storeSelected: HTMLImageElement [] = [];
 
 //Array durchmischen (wie funktioniert es?):
 function shuffleArray(array: Array<CardBlueprint>): void {
@@ -103,94 +115,107 @@ function createCarddeck(): void {
 
 //Rückseiten in den Dom laden
 function pushCardsToDom(): void {
-    var backsideSource: string = "images/cards_background.png";
     if (easy == true) {
         let newImg: HTMLImageElement = <HTMLImageElement>document.createElement("img");
         newImg.src = backsideSource;
         newImg.classList.add(giveClass.toString());
+        storeImg.push(newImg);
         giveClass++;
         // newImg.getAttribute("key") == andersImgt.getAttribute("key");
         easyContainer.appendChild(newImg);
         newImg.addEventListener("click", function(): void {
-            if (firstFlipped == false || secondFlipped == false) {
-                //In beiden Aktionen wird der Klassenname des newImg Elements genommen um das zugehörige Objekt im Array zu erreichen, dazu wird parseFloat benötigt
-                //da man den Klassenname (String) zu einem Float ändern muss.
-                newImg.setAttribute("key", easyDeck[parseFloat(newImg.className)].key.toString());
-                newImg.src = easyDeck[parseFloat(newImg.className)].source;
-                // storeFlippedCards.push(newImg.src);
-                if (firstFlipped == true) {
-                    secondFlipped = true;
+            if (comsTurn == false) {
+                if (firstFlipped == false || secondFlipped == false) {
+                    newImg.src = easyDeck[parseFloat(newImg.className)].source;
+                    storeSource.push(newImg.src);
+                    storeSelected.push(newImg);
+                    if (firstFlipped == true) {
+                        secondFlipped = true;
+                    }
+                    firstFlipped = true;
+                    checkForPairsEasy();
                 }
-                firstFlipped = true;
-                checkForPairsEasy();
             }
         });
         function checkForPairsEasy(): void {
             if (firstFlipped == true && secondFlipped == true) {
-                if (storeFlippedCards[0] === storeFlippedCards[1]) {
-                    newImg.setAttribute("style", "opacity: 0");
-                    firstFlipped = false;
-                    secondFlipped = false;
+                comsTurn = true;
+                if (storeSource[0] === storeSource[1]) {
+                    setTimeout(function(): void {
+                        storeSelected[0].classList.add("invisible");
+                        storeSelected[1].classList.add("invisible");
+                        playerScored = true;
+                        givePoints();
+                    }, 2000);
                 }
                 else {
-                    newImg.src = backsideSource;
+                    setTimeout(function(): void {
+                        storeSelected[0].src = backsideSource;
+                        storeSelected[1].src = backsideSource;
+                    }, 2000);
+                }
+                setTimeout(function(): void {
+                    storeSelected.length = 0;
+                    storeSource.length = 0;
                     firstFlipped = false;
                     secondFlipped = false;
-                }
+                    comPlays();
+                }, 3000);
             }
         }
     }
+
     else if (medium == true) {
         let newImgMedium: HTMLImageElement = <HTMLImageElement>document.createElement("img");
         newImgMedium.src = backsideSource;
         newImgMedium.classList.add(giveClass.toString());
+        storeImg.push(newImgMedium);
         giveClass++;
         mediumContainer.appendChild(newImgMedium);
         newImgMedium.addEventListener("click", function(): void {
-            if (firstFlipped == false || secondFlipped == false) {
-                newImgMedium.src = mediumDeck[parseFloat(newImgMedium.className)].source;
-                storeFlippedCards.push(newImgMedium.src);
-                storeImgClass.push(newImgMedium);
-                if (firstFlipped == true) {
-                    secondFlipped = true;
+            if (comsTurn == false) {
+                if (firstFlipped == false || secondFlipped == false) {
+                    newImgMedium.src = mediumDeck[parseFloat(newImgMedium.className)].source;
+                    storeSource.push(newImgMedium.src);
+                    storeSelected.push(newImgMedium);
+                    if (firstFlipped == true) {
+                        secondFlipped = true;
+                    }
+                    firstFlipped = true;
+                    checkForPairsMedium();
                 }
-                firstFlipped = true;
-                checkForPairsMedium();
             }
         });
         function checkForPairsMedium(): void {
             if (firstFlipped == true && secondFlipped == true) {
-                if (storeFlippedCards[0] === storeFlippedCards[1]) {
+                if (storeSource[0] === storeSource[1]) {
                     setTimeout(function(): void {
-                        // document.querySelector("." + storeImgClass[0] + "").setAttribute("style", "opacity: 0");
-                        // document.querySelector("." + storeImgClass[1] + "").setAttribute("style", "opacity: 0");
-                        storeImgClass[0].classList.add("invisible");
-                        storeImgClass[1].classList.add("invisible");
-                        storeImgClass.length = 0;
-                        storeFlippedCards.length = 0;
-                        firstFlipped = false;
-                        secondFlipped = false;
+                        storeSelected[0].classList.add("invisible");
+                        storeSelected[1].classList.add("invisible");
                     }, 2000);
                 }
                 else {
                     setTimeout(function(): void {
-                        storeImgClass[0].src = backsideSource;
-                        storeImgClass[1].src = backsideSource;
-                        storeImgClass = [];
-                        // newImgMedium.src = backsideSource;
-                        storeImgClass.length = 0;
-                        storeFlippedCards.length = 0;
-                        firstFlipped = false;
-                        secondFlipped = false;
+                        storeSelected[0].src = backsideSource;
+                        storeSelected[1].src = backsideSource;
                     }, 2000);
                 }
+                setTimeout(function(): void {
+                    storeSelected.length = 0;
+                    storeSource.length = 0;
+                    firstFlipped = false;
+                    secondFlipped = false;
+                    comPlays();
+                }, 3000);
             }
         }
     }
+
     else if (hard == true) {
         let newImgHard: HTMLImageElement = <HTMLImageElement>document.createElement("img");
         newImgHard.src = backsideSource;
         newImgHard.classList.add(giveClass.toString());
+        storeImg.push(newImgHard);
         giveClass++;
         hardContainer.appendChild(newImgHard);
         // newImgHard.addEventListener("click", function(): void {
@@ -199,14 +224,62 @@ function pushCardsToDom(): void {
     }
 }
 
+function comPlays(): void {
+    let firstImage: number;
+    let secondImage: number;
+    if (easy == true) {
+        storeImg[0].src = easyDeck[parseFloat(storeImg[0].className)].source;
+        storeSource.push(storeImg[0].src);
+        storeSelected.push(storeImg[0]);
+        //Zweite Karte:
+        setTimeout(function(): void {
+            storeImg[1].src = easyDeck[parseFloat(storeImg[1].className)].source;
+            storeSource.push(storeImg[1].src);
+            storeSelected.push(storeImg[1]);
+            setTimeout(function(): void {
+                checkPairsEasy();
+            }, 3000);
+        },1000);
+        function checkPairsEasy(): void {
+            if (storeSource[0] === storeSource[1]) {
+                storeSelected[0].classList.add("invisible");
+                storeSelected[1].classList.add("invisible");
+            }
+            else {
+                storeSelected[0].src = backsideSource; 
+                storeSelected[1].src = backsideSource;  
+            }
+            storeSelected.length = 0;
+            storeSource.length = 0;
+        }
+        // Spieler wieder dran
+        setTimeout(function(): void {
+            comsTurn = false;
+        }, 5000);
+    }
+}
+
+function givePoints(): void {
+    if (playerScored == true) {
+        playerCounter++;
+        playerPoints.innerHTML = playerCounter.toString();
+    }
+}
+
 //Neues Game starten: booleans und numbers auf ursprünglichen Wert zurücksetzen; divs leer räumen; divs wieder verstecken; Farbe des zuvor geklickten Buttons zurück zu Standard
 function nextGame(): void {
     lockDifficulty = false;
     firstFlipped = false;
     secondFlipped = false;
-    storeFlippedCards.length = 0;
-    storeImgClass.length = 0;
+    comsTurn = false;
+    storeSource.length = 0;
+    storeSelected.length = 0;
+    storeImg.length = 0;
     giveClass = 0;
+    playerCounter = 0;
+    playerPoints.innerHTML = playerCounter.toString();
+    comCounter = 0;
+    comPoints.innerHTML = comCounter.toString();
     if (easy == true) {
         easyContainer.innerHTML = "";
         easyContainer.classList.add("isHidden");
