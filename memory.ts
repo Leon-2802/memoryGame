@@ -1,13 +1,14 @@
 //Var-Elemente sammeln:
-var stufe1: HTMLInputElement = document.querySelector("#einfach");
-var stufe2: HTMLElement = document.querySelector("#normal");
-var stufe3: HTMLElement = document.querySelector("#schwer");
-var easyContainer: HTMLElement = document.querySelector("#easy-cards");
-var mediumContainer: HTMLElement = document.querySelector("#medium-cards");
-var hardContainer: HTMLElement = document.querySelector("#hard-cards");
-var newGame: HTMLElement = document.querySelector("#new-game");
-var playerPoints: HTMLElement = document.querySelector("#p-number");
-var comPoints: HTMLElement = document.querySelector("#c-number");
+// Warum werden 4 Karten aufgedeckt wenn nur noch 4 da sind?!
+const stufe1: HTMLInputElement = document.querySelector("#einfach");
+const stufe2: HTMLElement = document.querySelector("#normal");
+const stufe3: HTMLElement = document.querySelector("#schwer");
+const easyContainer: HTMLElement = document.querySelector("#easy-cards");
+const mediumContainer: HTMLElement = document.querySelector("#medium-cards");
+const hardContainer: HTMLElement = document.querySelector("#hard-cards");
+const newGame: HTMLElement = document.querySelector("#new-game");
+const playerPoints: HTMLElement = document.querySelector("#p-number");
+const comPoints: HTMLElement = document.querySelector("#c-number");
 
 //Quelle für die Kartenrückseiten:
 var backsideSource: string = "images/cards_background.png";
@@ -25,6 +26,21 @@ var comsTurn: boolean = false;
 var playerScored: boolean = false;
 var comScored: boolean = false;
 
+//Interface für Kartenobjekte:
+interface CardBlueprint {
+    source: string;
+    key: number;
+}
+//Arrays für Karten:
+var cardDeck: CardBlueprint[] = [];
+
+//andere Arrays:
+var storeImg: HTMLImageElement [] = [];
+var storeSource: string [] = [];
+var storeSelected: HTMLImageElement [] = [];
+var storeClassName: string [] = [];
+var storeDisappeared: number [] = [];
+
 //Counter für Unterscheiden der Kartenrückseiten:
 var giveClass: number = 0;
 //Counter für Punktevergabe:
@@ -38,12 +54,30 @@ comPoints.innerHTML = comCounter.toString();
 stufe1.addEventListener("click", function(): void {
     if (lockDifficulty == false) {
         easy = true;
+        for (let index: number = 1; index <= 2; index++) {
+            for (let index: number = 1; index <= 4; index++) {
+                let addCard: CardBlueprint = {
+                    source: "images/easy-mode-paare/paar" + index + ".jpg",
+                    key: index
+                };
+                cardDeck.push(addCard);
+            }
+        }
         createCarddeck();
     }
 });
 stufe2.addEventListener("click", function(): void {
     if (lockDifficulty == false) {
         medium = true;
+        for (let index: number = 1; index <= 2; index++) {
+            for (let index: number = 1; index <= 8; index++) {
+                let addCard: CardBlueprint = {
+                    source: "images/medium-mode-paare/paar" + index + ".jpg",
+                    key: index
+                };
+                cardDeck.push(addCard);
+            }
+        }
         createCarddeck();
     }
 });
@@ -58,17 +92,6 @@ newGame.addEventListener("click", function(): void {
     nextGame();
 });
 
-//Interface für die Kartendecks:
-interface CardBlueprint {
-    source: string;
-    class: string;
-    key: number;
-}
-
-var storeImg: HTMLImageElement [] = [];
-var storeSource: string [] = [];
-var storeSelected: HTMLImageElement [] = [];
-
 //Array durchmischen (wie funktioniert es?):
 function shuffleArray(array: Array<CardBlueprint>): void {
     for (let i: number = array.length - 1; i > 0; i--) {
@@ -82,7 +105,7 @@ function createCarddeck(): void {
         easyContainer.classList.remove("isHidden");
         stufe1.setAttribute("style", "color: cyan");
         lockDifficulty = true;
-        shuffleArray(easyDeck);
+        shuffleArray(cardDeck);
         for (var indexEasy: number = 1; indexEasy <= 8; indexEasy++) {
             pushCardsToDom();
         }
@@ -98,7 +121,7 @@ function createCarddeck(): void {
         mediumContainer.classList.remove("isHidden");
         stufe2.setAttribute("style", "color: cyan");
         lockDifficulty = true;
-        shuffleArray(mediumDeck);
+        shuffleArray(cardDeck);
         for (var indexMedium: number = 1; indexMedium <= 16; indexMedium++) {
             pushCardsToDom();
         }
@@ -126,9 +149,10 @@ function pushCardsToDom(): void {
         newImg.addEventListener("click", function(): void {
             if (comsTurn == false) {
                 if (firstFlipped == false || secondFlipped == false) {
-                    newImg.src = easyDeck[parseFloat(newImg.className)].source;
+                    newImg.src = cardDeck[parseFloat(newImg.className)].source;
                     storeSource.push(newImg.src);
                     storeSelected.push(newImg);
+                    storeClassName.push(newImg.className);
                     if (firstFlipped == true) {
                         secondFlipped = true;
                     }
@@ -144,6 +168,8 @@ function pushCardsToDom(): void {
                     setTimeout(function(): void {
                         storeSelected[0].classList.add("invisible");
                         storeSelected[1].classList.add("invisible");
+                        storeDisappeared.push(parseFloat(storeClassName[0]));
+                        storeDisappeared.push(parseFloat(storeClassName[1]));
                         playerScored = true;
                         givePoints();
                     }, 2000);
@@ -157,9 +183,10 @@ function pushCardsToDom(): void {
                 setTimeout(function(): void {
                     storeSelected.length = 0;
                     storeSource.length = 0;
+                    storeClassName.length = 0;
                     firstFlipped = false;
                     secondFlipped = false;
-                    comPlays();
+                    comPlays(0, 8);
                 }, 3000);
             }
         }
@@ -175,7 +202,7 @@ function pushCardsToDom(): void {
         newImgMedium.addEventListener("click", function(): void {
             if (comsTurn == false) {
                 if (firstFlipped == false || secondFlipped == false) {
-                    newImgMedium.src = mediumDeck[parseFloat(newImgMedium.className)].source;
+                    newImgMedium.src = cardDeck[parseFloat(newImgMedium.className)].source;
                     storeSource.push(newImgMedium.src);
                     storeSelected.push(newImgMedium);
                     if (firstFlipped == true) {
@@ -205,7 +232,7 @@ function pushCardsToDom(): void {
                     storeSource.length = 0;
                     firstFlipped = false;
                     secondFlipped = false;
-                    comPlays();
+                    comPlays(0, 16);
                 }, 3000);
             }
         }
@@ -224,18 +251,30 @@ function pushCardsToDom(): void {
     }
 }
 
-function comPlays(): void {
-    let firstImage: number;
-    let secondImage: number;
+function comPlays(min: number, max: number): void {
+    let firstImage: number = Math.floor(Math.random() * (max - min)) + min;
+    let secondImage: number = Math.floor(Math.random() * (max - min)) + min;
+
     if (easy == true) {
-        storeImg[0].src = easyDeck[parseFloat(storeImg[0].className)].source;
-        storeSource.push(storeImg[0].src);
-        storeSelected.push(storeImg[0]);
+        if (firstImage == secondImage) {
+            comPlays(0, 8);
+        }
+        for (let index: number = 0; index < storeDisappeared.length; index++) {
+            if (firstImage == storeDisappeared[index]) {
+                comPlays(0, 8);
+            }
+            else if (secondImage == storeDisappeared[index]) {
+                comPlays(0, 8);
+            }
+        }
+        storeImg[firstImage].src = cardDeck[parseFloat(storeImg[firstImage].className)].source;
+        storeSource.push(storeImg[firstImage].src);
+        storeSelected.push(storeImg[firstImage]);
         //Zweite Karte:
         setTimeout(function(): void {
-            storeImg[1].src = easyDeck[parseFloat(storeImg[1].className)].source;
-            storeSource.push(storeImg[1].src);
-            storeSelected.push(storeImg[1]);
+            storeImg[secondImage].src = cardDeck[parseFloat(storeImg[secondImage].className)].source;
+            storeSource.push(storeImg[secondImage].src);
+            storeSelected.push(storeImg[secondImage]);
             setTimeout(function(): void {
                 checkPairsEasy();
             }, 3000);
@@ -244,6 +283,8 @@ function comPlays(): void {
             if (storeSource[0] === storeSource[1]) {
                 storeSelected[0].classList.add("invisible");
                 storeSelected[1].classList.add("invisible");
+                storeDisappeared.push(firstImage);
+                storeDisappeared.push(secondImage);
             }
             else {
                 storeSelected[0].src = backsideSource; 
@@ -275,6 +316,7 @@ function nextGame(): void {
     storeSource.length = 0;
     storeSelected.length = 0;
     storeImg.length = 0;
+    cardDeck = [];
     giveClass = 0;
     playerCounter = 0;
     playerPoints.innerHTML = playerCounter.toString();
@@ -299,132 +341,3 @@ function nextGame(): void {
         hard = false;
     }
 }
-
-//Objekt-Arrays:
-//Objects für die einfach-Kartenpaare:
-var easyDeck: CardBlueprint[] = [
-    {
-        source: "images/easy-mode-paare/paar1.jpg",
-        class: "front",
-        key: 1
-    },
-    {
-        source: "images/easy-mode-paare/paar2.jpg",
-        class: "front",
-        key: 2
-    },
-    {
-        source: "images/easy-mode-paare/paar3.jpg",
-        class: "front",
-        key: 3
-    },
-    {
-        source: "images/easy-mode-paare/paar4.jpg",
-        class: "front",
-        key: 4
-    },
-    {
-        source: "images/easy-mode-paare/paar1.jpg",
-        class: "front",
-        key: 1
-    },
-    {
-        source: "images/easy-mode-paare/paar2.jpg",
-        class: "front",
-        key: 2
-    },
-    {
-        source: "images/easy-mode-paare/paar3.jpg",
-        class: "front",
-        key: 3
-    },
-    {
-        source: "images/easy-mode-paare/paar4.jpg",
-        class: "front",
-        key: 4
-    }
-];
-
-//Objekt-Array für Medium-Cards:
-var mediumDeck: CardBlueprint [] = [
-    {
-        source: "images/medium-mode-paare/paar1.jpg",
-        class: "front",
-        key: 1
-    },
-    {
-        source: "images/medium-mode-paare/paar2.jpg",
-        class: "front",
-        key: 2
-    },
-    {
-        source: "images/medium-mode-paare/paar3.jpg",
-        class: "front",
-        key: 3
-    },
-    {
-        source: "images/medium-mode-paare/paar4.jpg",
-        class: "front",
-        key: 4
-    },
-    {
-        source: "images/medium-mode-paare/paar5.jpg",
-        class: "front",
-        key: 5
-    },
-    {
-        source: "images/medium-mode-paare/paar6.jpg",
-        class: "front",
-        key: 6
-    },
-    {
-        source: "images/medium-mode-paare/paar7.jpg",
-        class: "front",
-        key: 7
-    },
-    {
-        source: "images/medium-mode-paare/paar8.jpg",
-        class: "front",
-        key: 8
-    },
-    {
-        source: "images/medium-mode-paare/paar1.jpg",
-        class: "front",
-        key: 1
-    },
-    {
-        source: "images/medium-mode-paare/paar2.jpg",
-        class: "front",
-        key: 2
-    },
-    {
-        source: "images/medium-mode-paare/paar3.jpg",
-        class: "front",
-        key: 3
-    },
-    {
-        source: "images/medium-mode-paare/paar4.jpg",
-        class: "front",
-        key: 4
-    },
-    {
-        source: "images/medium-mode-paare/paar5.jpg",
-        class: "front",
-        key: 5
-    },
-    {
-        source: "images/medium-mode-paare/paar6.jpg",
-        class: "front",
-        key: 6
-    },
-    {
-        source: "images/medium-mode-paare/paar7.jpg",
-        class: "front",
-        key: 7
-    },
-    {
-        source: "images/medium-mode-paare/paar8.jpg",
-        class: "front",
-        key: 8
-    }
-];

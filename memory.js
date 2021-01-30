@@ -1,4 +1,5 @@
 //Var-Elemente sammeln:
+// Warum werden 4 Karten aufgedeckt wenn nur noch 4 da sind?!
 var stufe1 = document.querySelector("#einfach");
 var stufe2 = document.querySelector("#normal");
 var stufe3 = document.querySelector("#schwer");
@@ -22,6 +23,14 @@ var flipBack = false;
 var comsTurn = false;
 var playerScored = false;
 var comScored = false;
+//Arrays für Karten:
+var cardDeck = [];
+//andere Arrays:
+var storeImg = [];
+var storeSource = [];
+var storeSelected = [];
+var storeClassName = [];
+var storeDisappeared = [];
 //Counter für Unterscheiden der Kartenrückseiten:
 var giveClass = 0;
 //Counter für Punktevergabe:
@@ -34,12 +43,30 @@ comPoints.innerHTML = comCounter.toString();
 stufe1.addEventListener("click", function () {
     if (lockDifficulty == false) {
         easy = true;
+        for (var index = 1; index <= 2; index++) {
+            for (var index_1 = 1; index_1 <= 4; index_1++) {
+                var addCard = {
+                    source: "images/easy-mode-paare/paar" + index_1 + ".jpg",
+                    key: index_1
+                };
+                cardDeck.push(addCard);
+            }
+        }
         createCarddeck();
     }
 });
 stufe2.addEventListener("click", function () {
     if (lockDifficulty == false) {
         medium = true;
+        for (var index = 1; index <= 2; index++) {
+            for (var index_2 = 1; index_2 <= 8; index_2++) {
+                var addCard = {
+                    source: "images/medium-mode-paare/paar" + index_2 + ".jpg",
+                    key: index_2
+                };
+                cardDeck.push(addCard);
+            }
+        }
         createCarddeck();
     }
 });
@@ -53,9 +80,6 @@ stufe3.addEventListener("click", function () {
 newGame.addEventListener("click", function () {
     nextGame();
 });
-var storeImg = [];
-var storeSource = [];
-var storeSelected = [];
 //Array durchmischen (wie funktioniert es?):
 function shuffleArray(array) {
     var _a;
@@ -69,7 +93,7 @@ function createCarddeck() {
         easyContainer.classList.remove("isHidden");
         stufe1.setAttribute("style", "color: cyan");
         lockDifficulty = true;
-        shuffleArray(easyDeck);
+        shuffleArray(cardDeck);
         for (var indexEasy = 1; indexEasy <= 8; indexEasy++) {
             pushCardsToDom();
         }
@@ -85,7 +109,7 @@ function createCarddeck() {
         mediumContainer.classList.remove("isHidden");
         stufe2.setAttribute("style", "color: cyan");
         lockDifficulty = true;
-        shuffleArray(mediumDeck);
+        shuffleArray(cardDeck);
         for (var indexMedium = 1; indexMedium <= 16; indexMedium++) {
             pushCardsToDom();
         }
@@ -112,9 +136,10 @@ function pushCardsToDom() {
         newImg_1.addEventListener("click", function () {
             if (comsTurn == false) {
                 if (firstFlipped == false || secondFlipped == false) {
-                    newImg_1.src = easyDeck[parseFloat(newImg_1.className)].source;
+                    newImg_1.src = cardDeck[parseFloat(newImg_1.className)].source;
                     storeSource.push(newImg_1.src);
                     storeSelected.push(newImg_1);
+                    storeClassName.push(newImg_1.className);
                     if (firstFlipped == true) {
                         secondFlipped = true;
                     }
@@ -130,6 +155,8 @@ function pushCardsToDom() {
                     setTimeout(function () {
                         storeSelected[0].classList.add("invisible");
                         storeSelected[1].classList.add("invisible");
+                        storeDisappeared.push(parseFloat(storeClassName[0]));
+                        storeDisappeared.push(parseFloat(storeClassName[1]));
                         playerScored = true;
                         givePoints();
                     }, 2000);
@@ -143,9 +170,10 @@ function pushCardsToDom() {
                 setTimeout(function () {
                     storeSelected.length = 0;
                     storeSource.length = 0;
+                    storeClassName.length = 0;
                     firstFlipped = false;
                     secondFlipped = false;
-                    comPlays();
+                    comPlays(0, 8);
                 }, 3000);
             }
         }
@@ -160,7 +188,7 @@ function pushCardsToDom() {
         newImgMedium_1.addEventListener("click", function () {
             if (comsTurn == false) {
                 if (firstFlipped == false || secondFlipped == false) {
-                    newImgMedium_1.src = mediumDeck[parseFloat(newImgMedium_1.className)].source;
+                    newImgMedium_1.src = cardDeck[parseFloat(newImgMedium_1.className)].source;
                     storeSource.push(newImgMedium_1.src);
                     storeSelected.push(newImgMedium_1);
                     if (firstFlipped == true) {
@@ -190,7 +218,7 @@ function pushCardsToDom() {
                     storeSource.length = 0;
                     firstFlipped = false;
                     secondFlipped = false;
-                    comPlays();
+                    comPlays(0, 16);
                 }, 3000);
             }
         }
@@ -207,18 +235,29 @@ function pushCardsToDom() {
         // });
     }
 }
-function comPlays() {
-    var firstImage;
-    var secondImage;
+function comPlays(min, max) {
+    var firstImage = Math.floor(Math.random() * (max - min)) + min;
+    var secondImage = Math.floor(Math.random() * (max - min)) + min;
     if (easy == true) {
-        storeImg[0].src = easyDeck[parseFloat(storeImg[0].className)].source;
-        storeSource.push(storeImg[0].src);
-        storeSelected.push(storeImg[0]);
+        if (firstImage == secondImage) {
+            comPlays(0, 8);
+        }
+        for (var index = 0; index < storeDisappeared.length; index++) {
+            if (firstImage == storeDisappeared[index]) {
+                comPlays(0, 8);
+            }
+            else if (secondImage == storeDisappeared[index]) {
+                comPlays(0, 8);
+            }
+        }
+        storeImg[firstImage].src = cardDeck[parseFloat(storeImg[firstImage].className)].source;
+        storeSource.push(storeImg[firstImage].src);
+        storeSelected.push(storeImg[firstImage]);
         //Zweite Karte:
         setTimeout(function () {
-            storeImg[1].src = easyDeck[parseFloat(storeImg[1].className)].source;
-            storeSource.push(storeImg[1].src);
-            storeSelected.push(storeImg[1]);
+            storeImg[secondImage].src = cardDeck[parseFloat(storeImg[secondImage].className)].source;
+            storeSource.push(storeImg[secondImage].src);
+            storeSelected.push(storeImg[secondImage]);
             setTimeout(function () {
                 checkPairsEasy();
             }, 3000);
@@ -227,6 +266,8 @@ function comPlays() {
             if (storeSource[0] === storeSource[1]) {
                 storeSelected[0].classList.add("invisible");
                 storeSelected[1].classList.add("invisible");
+                storeDisappeared.push(firstImage);
+                storeDisappeared.push(secondImage);
             }
             else {
                 storeSelected[0].src = backsideSource;
@@ -256,6 +297,7 @@ function nextGame() {
     storeSource.length = 0;
     storeSelected.length = 0;
     storeImg.length = 0;
+    cardDeck = [];
     giveClass = 0;
     playerCounter = 0;
     playerPoints.innerHTML = playerCounter.toString();
@@ -280,131 +322,4 @@ function nextGame() {
         hard = false;
     }
 }
-//Objekt-Arrays:
-//Objects für die einfach-Kartenpaare:
-var easyDeck = [
-    {
-        source: "images/easy-mode-paare/paar1.jpg",
-        class: "front",
-        key: 1
-    },
-    {
-        source: "images/easy-mode-paare/paar2.jpg",
-        class: "front",
-        key: 2
-    },
-    {
-        source: "images/easy-mode-paare/paar3.jpg",
-        class: "front",
-        key: 3
-    },
-    {
-        source: "images/easy-mode-paare/paar4.jpg",
-        class: "front",
-        key: 4
-    },
-    {
-        source: "images/easy-mode-paare/paar1.jpg",
-        class: "front",
-        key: 1
-    },
-    {
-        source: "images/easy-mode-paare/paar2.jpg",
-        class: "front",
-        key: 2
-    },
-    {
-        source: "images/easy-mode-paare/paar3.jpg",
-        class: "front",
-        key: 3
-    },
-    {
-        source: "images/easy-mode-paare/paar4.jpg",
-        class: "front",
-        key: 4
-    }
-];
-//Objekt-Array für Medium-Cards:
-var mediumDeck = [
-    {
-        source: "images/medium-mode-paare/paar1.jpg",
-        class: "front",
-        key: 1
-    },
-    {
-        source: "images/medium-mode-paare/paar2.jpg",
-        class: "front",
-        key: 2
-    },
-    {
-        source: "images/medium-mode-paare/paar3.jpg",
-        class: "front",
-        key: 3
-    },
-    {
-        source: "images/medium-mode-paare/paar4.jpg",
-        class: "front",
-        key: 4
-    },
-    {
-        source: "images/medium-mode-paare/paar5.jpg",
-        class: "front",
-        key: 5
-    },
-    {
-        source: "images/medium-mode-paare/paar6.jpg",
-        class: "front",
-        key: 6
-    },
-    {
-        source: "images/medium-mode-paare/paar7.jpg",
-        class: "front",
-        key: 7
-    },
-    {
-        source: "images/medium-mode-paare/paar8.jpg",
-        class: "front",
-        key: 8
-    },
-    {
-        source: "images/medium-mode-paare/paar1.jpg",
-        class: "front",
-        key: 1
-    },
-    {
-        source: "images/medium-mode-paare/paar2.jpg",
-        class: "front",
-        key: 2
-    },
-    {
-        source: "images/medium-mode-paare/paar3.jpg",
-        class: "front",
-        key: 3
-    },
-    {
-        source: "images/medium-mode-paare/paar4.jpg",
-        class: "front",
-        key: 4
-    },
-    {
-        source: "images/medium-mode-paare/paar5.jpg",
-        class: "front",
-        key: 5
-    },
-    {
-        source: "images/medium-mode-paare/paar6.jpg",
-        class: "front",
-        key: 6
-    },
-    {
-        source: "images/medium-mode-paare/paar7.jpg",
-        class: "front",
-        key: 7
-    },
-    {
-        source: "images/medium-mode-paare/paar8.jpg",
-        class: "front",
-        key: 8
-    }
-];
 //# sourceMappingURL=memory.js.map
