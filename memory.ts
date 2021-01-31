@@ -22,7 +22,7 @@ var lockDifficulty: boolean = false;
 var firstFlipped: boolean = false;
 var secondFlipped: boolean = false;
 var flipBack: boolean = false;
-var comsTurn: boolean = false;
+var comsTurn: boolean = true;
 var playerScored: boolean = false;
 var comScored: boolean = false;
 
@@ -33,13 +33,15 @@ interface CardBlueprint {
 }
 //Arrays für Karten:
 var cardDeck: CardBlueprint[] = [];
+//Arrays für das zufällige Aufdecken des Computers:
+var availableCards: number [] = [];
 
 //andere Arrays:
 var storeImg: HTMLImageElement [] = [];
 var storeSource: string [] = [];
 var storeSelected: HTMLImageElement [] = [];
 var storeClassName: string [] = [];
-var storeDisappeared: number [] = [];
+
 
 //Counter für Unterscheiden der Kartenrückseiten:
 var giveClass: number = 0;
@@ -63,7 +65,13 @@ stufe1.addEventListener("click", function(): void {
                 cardDeck.push(addCard);
             }
         }
+        for (let index: number = 0; index <= 7; index++) {
+            availableCards.push(index);
+        }
         createCarddeck();
+        setTimeout(function(): void {
+            comPlays();
+        }, 1000);
     }
 });
 stufe2.addEventListener("click", function(): void {
@@ -78,7 +86,13 @@ stufe2.addEventListener("click", function(): void {
                 cardDeck.push(addCard);
             }
         }
+        for (let index: number = 0; index <= 15; index++) {
+            availableCards.push(index);
+        }
         createCarddeck();
+        setTimeout(function(): void {
+            comPlays();
+        }, 1000);
     }
 });
 stufe3.addEventListener("click", function(): void {
@@ -109,13 +123,6 @@ function createCarddeck(): void {
         for (var indexEasy: number = 1; indexEasy <= 8; indexEasy++) {
             pushCardsToDom();
         }
-        // for (var twoTimes: number = 1; twoTimes <= 2; twoTimes++) {
-        //     for (var frontEasy: number = 1; frontEasy <= 4; frontEasy++) {
-        //         pushCardsFront(cardFrontIndex);
-        //         cardFrontIndex++;
-        //     }
-        //     cardFrontIndex = 0;
-        // }
     }
     else if (medium == true && lockDifficulty == false) {
         mediumContainer.classList.remove("isHidden");
@@ -157,19 +164,31 @@ function pushCardsToDom(): void {
                         secondFlipped = true;
                     }
                     firstFlipped = true;
-                    checkForPairsEasy();
+                    if (storeSelected[0].className === storeSelected[1].className) {
+                        secondFlipped = false;
+                        storeSelected.splice(1, 1);
+                        storeSource.splice(1, 1);
+                    }
+                    else if (storeSelected[0].className != storeSelected[1].className) {
+                        checkForPairsEasy();
+                    }
                 }
             }
         });
         function checkForPairsEasy(): void {
             if (firstFlipped == true && secondFlipped == true) {
-                comsTurn = true;
                 if (storeSource[0] === storeSource[1]) {
                     setTimeout(function(): void {
+                        const index: number = availableCards.indexOf(parseFloat(storeSelected[0].className));
+                        if (index > -1) {
+                            availableCards.splice(index, 1);
+                        }
+                        const index2: number = availableCards.indexOf(parseFloat(storeSelected[1].className));
+                        if (index2 > -1) {
+                            availableCards.splice(index2, 1);
+                        }
                         storeSelected[0].classList.add("invisible");
                         storeSelected[1].classList.add("invisible");
-                        storeDisappeared.push(parseFloat(storeClassName[0]));
-                        storeDisappeared.push(parseFloat(storeClassName[1]));
                         playerScored = true;
                         givePoints();
                     }, 2000);
@@ -186,7 +205,8 @@ function pushCardsToDom(): void {
                     storeClassName.length = 0;
                     firstFlipped = false;
                     secondFlipped = false;
-                    comPlays(0, 8);
+                    comsTurn = true;
+                    comPlays();
                 }, 3000);
             }
         }
@@ -209,7 +229,14 @@ function pushCardsToDom(): void {
                         secondFlipped = true;
                     }
                     firstFlipped = true;
-                    checkForPairsMedium();
+                    if (storeSelected[0].className === storeSelected[1].className) {
+                        secondFlipped = false;
+                        storeSelected.splice(1, 1);
+                        storeSource.splice(1, 1);
+                    }
+                    else if (storeSelected[0].className != storeSelected[1].className) {
+                        checkForPairsMedium();
+                    }
                 }
             }
         });
@@ -217,8 +244,18 @@ function pushCardsToDom(): void {
             if (firstFlipped == true && secondFlipped == true) {
                 if (storeSource[0] === storeSource[1]) {
                     setTimeout(function(): void {
+                        const index: number = availableCards.indexOf(parseFloat(storeSelected[0].className));
+                        if (index > -1) {
+                            availableCards.splice(index, 1);
+                        }
+                        const index2: number = availableCards.indexOf(parseFloat(storeSelected[1].className));
+                        if (index2 > -1) {
+                            availableCards.splice(index2, 1);
+                        }
                         storeSelected[0].classList.add("invisible");
                         storeSelected[1].classList.add("invisible");
+                        playerScored = true;
+                        givePoints();
                     }, 2000);
                 }
                 else {
@@ -232,7 +269,8 @@ function pushCardsToDom(): void {
                     storeSource.length = 0;
                     firstFlipped = false;
                     secondFlipped = false;
-                    comPlays(0, 16);
+                    comsTurn = true;
+                    comPlays();
                 }, 3000);
             }
         }
@@ -251,59 +289,70 @@ function pushCardsToDom(): void {
     }
 }
 
-function comPlays(min: number, max: number): void {
-    let firstImage: number = Math.floor(Math.random() * (max - min)) + min;
-    let secondImage: number = Math.floor(Math.random() * (max - min)) + min;
-
-    if (easy == true) {
-        if (firstImage == secondImage) {
-            comPlays(0, 8);
-        }
-        for (let index: number = 0; index < storeDisappeared.length; index++) {
-            if (firstImage == storeDisappeared[index]) {
-                comPlays(0, 8);
-            }
-            else if (secondImage == storeDisappeared[index]) {
-                comPlays(0, 8);
-            }
-        }
-        storeImg[firstImage].src = cardDeck[parseFloat(storeImg[firstImage].className)].source;
-        storeSource.push(storeImg[firstImage].src);
-        storeSelected.push(storeImg[firstImage]);
-        //Zweite Karte:
-        setTimeout(function(): void {
-            storeImg[secondImage].src = cardDeck[parseFloat(storeImg[secondImage].className)].source;
-            storeSource.push(storeImg[secondImage].src);
-            storeSelected.push(storeImg[secondImage]);
-            setTimeout(function(): void {
-                checkPairsEasy();
-            }, 3000);
-        },1000);
-        function checkPairsEasy(): void {
-            if (storeSource[0] === storeSource[1]) {
-                storeSelected[0].classList.add("invisible");
-                storeSelected[1].classList.add("invisible");
-                storeDisappeared.push(firstImage);
-                storeDisappeared.push(secondImage);
-            }
-            else {
-                storeSelected[0].src = backsideSource; 
-                storeSelected[1].src = backsideSource;  
-            }
-            storeSelected.length = 0;
-            storeSource.length = 0;
-        }
-        // Spieler wieder dran
-        setTimeout(function(): void {
-            comsTurn = false;
-        }, 5000);
+//Durchmischen des Arrays, aus welchem der Computer die Nummern für die aufzudeckenden Karten zieht:
+function shuffleAvailableCards(array: Array<number>): void {
+    for (let i: number = array.length - 1; i > 0; i--) {
+        const j: number = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
     }
+}
+
+function comPlays(): void {
+    shuffleAvailableCards(availableCards);
+    //Computer zeiht immer die ersten beiden Nummern im Array, durch das Durchmischen wird die Zufälligkeit garantiert.
+    let firstImage: number = availableCards[0];
+    let secondImage: number = availableCards[1];
+
+    storeImg[firstImage].src = cardDeck[parseFloat(storeImg[firstImage].className)].source;
+    storeSource.push(storeImg[firstImage].src);
+    storeSelected.push(storeImg[firstImage]);
+    //Zweite Karte:
+    setTimeout(function(): void {
+        storeImg[secondImage].src = cardDeck[parseFloat(storeImg[secondImage].className)].source;
+        storeSource.push(storeImg[secondImage].src);
+        storeSelected.push(storeImg[secondImage]);
+        setTimeout(function(): void {
+            checkPairsEasy();
+        }, 3000);
+    },1000);
+    function checkPairsEasy(): void {
+        if (storeSource[0] === storeSource[1]) {
+            const index: number = availableCards.indexOf(parseFloat(storeSelected[0].className));
+            if (index > -1) {
+                availableCards.splice(index, 1);
+            }
+            const index2: number = availableCards.indexOf(parseFloat(storeSelected[1].className));
+            if (index2 > -1) {
+                availableCards.splice(index2, 1);
+            }
+            storeSelected[0].classList.add("invisible");
+            storeSelected[1].classList.add("invisible");
+            comScored = true;
+            givePoints();
+            }
+        else {
+            storeSelected[0].src = backsideSource; 
+            storeSelected[1].src = backsideSource;  
+        }
+        storeSelected.length = 0;
+        storeSource.length = 0;
+    }
+            // Spieler wieder dran
+    setTimeout(function(): void {
+        comsTurn = false;
+    }, 5000);
 }
 
 function givePoints(): void {
     if (playerScored == true) {
         playerCounter++;
         playerPoints.innerHTML = playerCounter.toString();
+        playerScored = false;
+    }
+    else if (comScored == true) {
+        comCounter++;
+        comPoints.innerHTML = comCounter.toString();
+        comScored = false;
     }
 }
 
@@ -312,12 +361,13 @@ function nextGame(): void {
     lockDifficulty = false;
     firstFlipped = false;
     secondFlipped = false;
-    comsTurn = false;
+    comsTurn = true;
+    cardDeck = [];
+    giveClass = 0;
+    availableCards.length = 0;
     storeSource.length = 0;
     storeSelected.length = 0;
     storeImg.length = 0;
-    cardDeck = [];
-    giveClass = 0;
     playerCounter = 0;
     playerPoints.innerHTML = playerCounter.toString();
     comCounter = 0;

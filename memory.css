@@ -30,11 +30,17 @@ h1 {
     position: absolute;
     left: 90%;
     top: 10px;
+    text-decoration: underline;
 }
 #h22 {
     position: absolute;
     left: 90%;
-    top: 35px;
+    top: 60px;
+}
+#h23 {
+    position: absolute;
+    left: 85%;
+    top: 110px;
 }
 #game-area {
     width: 100%;
