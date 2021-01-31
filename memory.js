@@ -9,6 +9,32 @@ var hardContainer = document.querySelector("#hard-cards");
 var newGame = document.querySelector("#new-game");
 var playerPoints = document.querySelector("#p-number");
 var comPoints = document.querySelector("#c-number");
+var p1vscom = document.querySelector("#h21");
+var p1vsp2 = document.querySelector("#h22");
+var comvscom = document.querySelector("#h23");
+//Welcher Spieltyp?:
+//Booleans:
+var comvcom = false;
+var com1turn;
+var preventTheOther = false;
+//QuerySelector und Aktionen für einzelne Spieltyp-Buttons:
+comvscom.addEventListener("click", function () {
+    comvscom.setAttribute("style", "text-decoration: underline");
+    p1vscom.setAttribute("style", "text-decoration: none");
+    p1vsp2.setAttribute("style", "text-decoration: none");
+    document.querySelector("#player").innerHTML = "Com1";
+    document.querySelector("#com").innerHTML = "Com2";
+    com1turn = true;
+    comvcom = true;
+});
+p1vscom.addEventListener("click", function () {
+    p1vscom.setAttribute("style", "text-decoration: underline");
+    comvscom.setAttribute("style", "text-decoration: none");
+    p1vsp2.setAttribute("style", "text-decoration: none");
+    document.querySelector("#player").innerHTML = "Player";
+    document.querySelector("#com").innerHTML = "Com";
+    comvcom = false;
+});
 //Quelle für die Kartenrückseiten:
 var backsideSource = "images/cards_background.png";
 //Booleans für die Schwierigkeiten:
@@ -137,7 +163,6 @@ function pushCardsToDom() {
         newImg_1.classList.add(giveClass.toString());
         storeImg.push(newImg_1);
         giveClass++;
-        // newImg.getAttribute("key") == andersImgt.getAttribute("key");
         easyContainer.appendChild(newImg_1);
         newImg_1.addEventListener("click", function () {
             if (comsTurn == false) {
@@ -281,6 +306,15 @@ function shuffleAvailableCards(array) {
     }
 }
 function comPlays() {
+    if (com1turn == true) {
+        document.querySelector("#com").setAttribute("style", "text-decoration: none");
+        document.querySelector("#player").setAttribute("style", "text-decoration: underline");
+    }
+    else if (com1turn == false) {
+        document.querySelector("#player").setAttribute("style", "text-decoration: none");
+        document.querySelector("#com").setAttribute("style", "text-decoration: underline");
+        preventTheOther = true;
+    }
     shuffleAvailableCards(availableCards);
     //Computer zeiht immer die ersten beiden Nummern im Array, durch das Durchmischen wird die Zufälligkeit garantiert.
     var firstImage = availableCards[0];
@@ -309,8 +343,20 @@ function comPlays() {
             }
             storeSelected[0].classList.add("invisible");
             storeSelected[1].classList.add("invisible");
-            comScored = true;
-            givePoints();
+            if (comvcom == false) {
+                comScored = true;
+                givePoints();
+            }
+            else {
+                if (com1turn == true) {
+                    playerScored = true;
+                    givePoints();
+                }
+                else if (com1turn == false) {
+                    comScored = true;
+                    givePoints();
+                }
+            }
         }
         else {
             storeSelected[0].src = backsideSource;
@@ -320,9 +366,22 @@ function comPlays() {
         storeSource.length = 0;
     }
     // Spieler wieder dran
-    setTimeout(function () {
-        comsTurn = false;
-    }, 5000);
+    if (comvcom == true) {
+        setTimeout(function () {
+            if (com1turn == true) {
+                com1turn = false;
+            }
+            else if (preventTheOther == true) {
+                com1turn = true;
+            }
+            comPlays();
+        }, 5000);
+    }
+    else {
+        setTimeout(function () {
+            comsTurn = false;
+        }, 4500);
+    }
 }
 function givePoints() {
     if (playerScored == true) {
@@ -371,4 +430,7 @@ function nextGame() {
         hard = false;
     }
 }
+// for (let: index = 0; index < Array.length; index++) {
+//     array1[index] == array2[index];
+// }
 //# sourceMappingURL=memory.js.map

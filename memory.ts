@@ -9,6 +9,33 @@ const hardContainer: HTMLElement = document.querySelector("#hard-cards");
 const newGame: HTMLElement = document.querySelector("#new-game");
 const playerPoints: HTMLElement = document.querySelector("#p-number");
 const comPoints: HTMLElement = document.querySelector("#c-number");
+const p1vscom: HTMLElement = document.querySelector("#h21");
+const p1vsp2: HTMLElement = document.querySelector("#h22");
+const comvscom: HTMLElement = document.querySelector("#h23");
+
+//Welcher Spieltyp?:
+//Booleans:
+var comvcom: boolean = false;
+var com1turn: boolean;
+var preventTheOther: boolean = false;
+//QuerySelector und Aktionen für einzelne Spieltyp-Buttons:
+comvscom.addEventListener("click", function(): void {
+    comvscom.setAttribute("style", "text-decoration: underline");
+    p1vscom.setAttribute("style", "text-decoration: none");
+    p1vsp2.setAttribute("style", "text-decoration: none");
+    document.querySelector("#player").innerHTML = "Com1";
+    document.querySelector("#com").innerHTML = "Com2";
+    com1turn = true;
+    comvcom = true;
+});
+p1vscom.addEventListener("click", function(): void {
+    p1vscom.setAttribute("style", "text-decoration: underline");
+    comvscom.setAttribute("style", "text-decoration: none");
+    p1vsp2.setAttribute("style", "text-decoration: none");
+    document.querySelector("#player").innerHTML = "Player";
+    document.querySelector("#com").innerHTML = "Com";
+    comvcom = false;
+});
 
 //Quelle für die Kartenrückseiten:
 var backsideSource: string = "images/cards_background.png";
@@ -151,7 +178,6 @@ function pushCardsToDom(): void {
         newImg.classList.add(giveClass.toString());
         storeImg.push(newImg);
         giveClass++;
-        // newImg.getAttribute("key") == andersImgt.getAttribute("key");
         easyContainer.appendChild(newImg);
         newImg.addEventListener("click", function(): void {
             if (comsTurn == false) {
@@ -298,6 +324,16 @@ function shuffleAvailableCards(array: Array<number>): void {
 }
 
 function comPlays(): void {
+
+    if (com1turn == true) {
+        document.querySelector("#com").setAttribute("style", "text-decoration: none");
+        document.querySelector("#player").setAttribute("style", "text-decoration: underline"); 
+    } else if (com1turn == false) {
+        document.querySelector("#player").setAttribute("style", "text-decoration: none");
+        document.querySelector("#com").setAttribute("style", "text-decoration: underline");
+        preventTheOther = true;
+    }
+
     shuffleAvailableCards(availableCards);
     //Computer zeiht immer die ersten beiden Nummern im Array, durch das Durchmischen wird die Zufälligkeit garantiert.
     let firstImage: number = availableCards[0];
@@ -327,9 +363,20 @@ function comPlays(): void {
             }
             storeSelected[0].classList.add("invisible");
             storeSelected[1].classList.add("invisible");
-            comScored = true;
-            givePoints();
-            }
+            if (comvcom == false) {
+                comScored = true;
+                givePoints();
+            } else {
+                if (com1turn == true) {
+                    playerScored = true;
+                    givePoints();
+                }
+                else if (com1turn == false) {
+                    comScored = true;
+                    givePoints();
+                }
+            } 
+        }
         else {
             storeSelected[0].src = backsideSource; 
             storeSelected[1].src = backsideSource;  
@@ -338,9 +385,22 @@ function comPlays(): void {
         storeSource.length = 0;
     }
             // Spieler wieder dran
-    setTimeout(function(): void {
-        comsTurn = false;
-    }, 5000);
+    if (comvcom == true) {
+        setTimeout(function(): void {
+            if (com1turn == true) {
+                com1turn = false;
+            }
+            else if (preventTheOther == true) {
+                com1turn = true;
+            }
+            comPlays();
+        }, 5000);
+    }
+    else {
+        setTimeout(function(): void {
+            comsTurn = false;
+        }, 4500);
+    }
 }
 
 function givePoints(): void {
@@ -391,3 +451,7 @@ function nextGame(): void {
         hard = false;
     }
 }
+
+// for (let: index = 0; index < Array.length; index++) {
+//     array1[index] == array2[index];
+// }
