@@ -401,6 +401,9 @@ function nextGame() {
     firstFlipped = false;
     secondFlipped = false;
     comsTurn = true;
+    if (comvcom == true) {
+        com1turn = true;
+    }
     cardDeck = [];
     giveClass = 0;
     availableCards.length = 0;
