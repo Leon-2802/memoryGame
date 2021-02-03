@@ -17,7 +17,10 @@ const comvscom: HTMLElement = document.querySelector("#h23");
 //Booleans:
 var comvcom: boolean = false;
 var com1turn: boolean;
+var playervplayer: boolean = false;
+var player1turn: boolean;
 var preventTheOther: boolean = false;
+var comsTurn: boolean = true;
 //QuerySelector und Aktionen für einzelne Spieltyp-Buttons:
 //COMvCOM mode noch verbuggt!!
 comvscom.addEventListener("click", function(): void {
@@ -26,8 +29,10 @@ comvscom.addEventListener("click", function(): void {
     p1vsp2.setAttribute("style", "text-decoration: none");
     document.querySelector("#player").innerHTML = "Com1";
     document.querySelector("#com").innerHTML = "Com2";
+    playervplayer = false;
     com1turn = true;
     comvcom = true;
+    comsTurn = true;
 });
 p1vscom.addEventListener("click", function(): void {
     p1vscom.setAttribute("style", "text-decoration: underline");
@@ -36,6 +41,19 @@ p1vscom.addEventListener("click", function(): void {
     document.querySelector("#player").innerHTML = "Player";
     document.querySelector("#com").innerHTML = "Com";
     comvcom = false;
+    playervplayer = false;
+    comsTurn = true;
+});
+p1vsp2.addEventListener("click", function(): void {
+    p1vscom.setAttribute("style", "text-decoration: none");
+    comvscom.setAttribute("style", "text-decoration: none");
+    p1vsp2.setAttribute("style", "text-decoration: underline");
+    document.querySelector("#player").innerHTML = "Player 1";
+    document.querySelector("#com").innerHTML = "Player 2";
+    comvcom = false;
+    playervplayer = true;
+    player1turn = true;
+    comsTurn = false;
 });
 
 //Quelle für die Kartenrückseiten:
@@ -50,7 +68,6 @@ var lockDifficulty: boolean = false;
 var firstFlipped: boolean = false;
 var secondFlipped: boolean = false;
 var flipBack: boolean = false;
-var comsTurn: boolean = true;
 var playerScored: boolean = false;
 var comScored: boolean = false;
 var runAgain: boolean = false;
@@ -98,9 +115,11 @@ stufe1.addEventListener("click", function(): void {
             availableCards.push(index);
         }
         createCarddeck();
-        setTimeout(function(): void {
-            comPlays();
-        }, 1000);
+        if (playervplayer == false) {
+            setTimeout(function(): void {
+                comPlays();
+            }, 1000);
+        }
     }
 });
 stufe2.addEventListener("click", function(): void {
@@ -119,9 +138,11 @@ stufe2.addEventListener("click", function(): void {
             availableCards.push(index);
         }
         createCarddeck();
-        setTimeout(function(): void {
-            comPlays();
-        }, 1000);
+        if (playervplayer == false) {
+            setTimeout(function(): void {
+                comPlays();
+            }, 1000);
+        }
     }
 });
 stufe3.addEventListener("click", function(): void {
@@ -140,9 +161,11 @@ stufe3.addEventListener("click", function(): void {
             availableCards.push(index);
         }
         createCarddeck();
-        setTimeout(function(): void {
-            comPlays();
-        }, 1000);
+        if (playervplayer == false) {
+            setTimeout(function(): void {
+                comPlays();
+            }, 1000);
+        }
     }
 });
 //Buttons:
@@ -252,8 +275,10 @@ function pushCardsToDom(): void {
                         storeClassName.length = 0;
                         firstFlipped = false;
                         secondFlipped = false;
-                        comsTurn = true;
-                        comPlays();
+                        if (playervplayer == false) {
+                            comsTurn = true;
+                            comPlays();
+                        }
                     }, 3000);
                 }
             }
@@ -320,8 +345,10 @@ function pushCardsToDom(): void {
                         storeSource.length = 0;
                         firstFlipped = false;
                         secondFlipped = false;
-                        comsTurn = true;
-                        comPlays();
+                        if (playervplayer == false) {
+                            comsTurn = true;
+                            comPlays();
+                        }
                     }, 3000);
                 }
             }
@@ -388,8 +415,10 @@ function pushCardsToDom(): void {
                         storeSource.length = 0;
                         firstFlipped = false;
                         secondFlipped = false;
-                        comsTurn = true;
-                        comPlays();
+                        if (playervplayer == false) {
+                            comsTurn = true;
+                            comPlays();
+                        }
                     }, 3000);
                 }
             }
@@ -502,14 +531,35 @@ function givePoints(): void {
         playerCounter++;
         playerPoints.innerHTML = playerCounter.toString();
         playerScored = false;
+        announceWinner();
     }
     else if (comScored == true) {
         comCounter++;
         comPoints.innerHTML = comCounter.toString();
         comScored = false;
+        announceWinner();
     }
 }
 
+function announceWinner(): void {
+    if (availableCards.length <= 0) {
+        if (playerCounter > comCounter) {
+            setTimeout(function(): void {
+                alert("You have won the Game! Congrats!");
+            }, 1000);
+        }
+        else if (comCounter > playerCounter) {
+            setTimeout(function(): void {
+                alert("The Computer has won the Game... That was a weak performance...");
+            }, 1000);
+        }
+        else if(comCounter == playerCounter) {
+            setTimeout(function(): void {
+                alert("It's a tie game!");
+            }, 1000);
+        }
+    }
+}
 //Neues Game starten: booleans und numbers auf ursprünglichen Wert zurücksetzen; divs leer räumen; divs wieder verstecken; Farbe des zuvor geklickten Buttons zurück zu Standard
 function nextGame(): void {
     lockDifficulty = false;
@@ -518,6 +568,9 @@ function nextGame(): void {
     comsTurn = true;
     if (comvcom == true) {
         com1turn = true;
+    }
+    if (playervplayer == true) {
+        player1turn = true;
     }
     cardDeck = [];
     giveClass = 0;

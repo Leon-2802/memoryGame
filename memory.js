@@ -16,7 +16,10 @@ var comvscom = document.querySelector("#h23");
 //Booleans:
 var comvcom = false;
 var com1turn;
+var playervplayer = false;
+var player1turn;
 var preventTheOther = false;
+var comsTurn = true;
 //QuerySelector und Aktionen für einzelne Spieltyp-Buttons:
 //COMvCOM mode noch verbuggt!!
 comvscom.addEventListener("click", function () {
@@ -25,8 +28,10 @@ comvscom.addEventListener("click", function () {
     p1vsp2.setAttribute("style", "text-decoration: none");
     document.querySelector("#player").innerHTML = "Com1";
     document.querySelector("#com").innerHTML = "Com2";
+    playervplayer = false;
     com1turn = true;
     comvcom = true;
+    comsTurn = true;
 });
 p1vscom.addEventListener("click", function () {
     p1vscom.setAttribute("style", "text-decoration: underline");
@@ -35,6 +40,19 @@ p1vscom.addEventListener("click", function () {
     document.querySelector("#player").innerHTML = "Player";
     document.querySelector("#com").innerHTML = "Com";
     comvcom = false;
+    playervplayer = false;
+    comsTurn = true;
+});
+p1vsp2.addEventListener("click", function () {
+    p1vscom.setAttribute("style", "text-decoration: none");
+    comvscom.setAttribute("style", "text-decoration: none");
+    p1vsp2.setAttribute("style", "text-decoration: underline");
+    document.querySelector("#player").innerHTML = "Player 1";
+    document.querySelector("#com").innerHTML = "Player 2";
+    comvcom = false;
+    playervplayer = true;
+    player1turn = true;
+    comsTurn = false;
 });
 //Quelle für die Kartenrückseiten:
 var backsideSource = "images/cards_background.png";
@@ -47,7 +65,6 @@ var lockDifficulty = false;
 var firstFlipped = false;
 var secondFlipped = false;
 var flipBack = false;
-var comsTurn = true;
 var playerScored = false;
 var comScored = false;
 var runAgain = false;
@@ -85,9 +102,11 @@ stufe1.addEventListener("click", function () {
             availableCards.push(index);
         }
         createCarddeck();
-        setTimeout(function () {
-            comPlays();
-        }, 1000);
+        if (playervplayer == false) {
+            setTimeout(function () {
+                comPlays();
+            }, 1000);
+        }
     }
 });
 stufe2.addEventListener("click", function () {
@@ -106,9 +125,11 @@ stufe2.addEventListener("click", function () {
             availableCards.push(index);
         }
         createCarddeck();
-        setTimeout(function () {
-            comPlays();
-        }, 1000);
+        if (playervplayer == false) {
+            setTimeout(function () {
+                comPlays();
+            }, 1000);
+        }
     }
 });
 stufe3.addEventListener("click", function () {
@@ -127,9 +148,11 @@ stufe3.addEventListener("click", function () {
             availableCards.push(index);
         }
         createCarddeck();
-        setTimeout(function () {
-            comPlays();
-        }, 1000);
+        if (playervplayer == false) {
+            setTimeout(function () {
+                comPlays();
+            }, 1000);
+        }
     }
 });
 //Buttons:
@@ -237,8 +260,10 @@ function pushCardsToDom() {
                         storeClassName.length = 0;
                         firstFlipped = false;
                         secondFlipped = false;
-                        comsTurn = true;
-                        comPlays();
+                        if (playervplayer == false) {
+                            comsTurn = true;
+                            comPlays();
+                        }
                     }, 3000);
                 }
             }
@@ -304,8 +329,10 @@ function pushCardsToDom() {
                         storeSource.length = 0;
                         firstFlipped = false;
                         secondFlipped = false;
-                        comsTurn = true;
-                        comPlays();
+                        if (playervplayer == false) {
+                            comsTurn = true;
+                            comPlays();
+                        }
                     }, 3000);
                 }
             }
@@ -371,8 +398,10 @@ function pushCardsToDom() {
                         storeSource.length = 0;
                         firstFlipped = false;
                         secondFlipped = false;
-                        comsTurn = true;
-                        comPlays();
+                        if (playervplayer == false) {
+                            comsTurn = true;
+                            comPlays();
+                        }
                     }, 3000);
                 }
             }
@@ -481,11 +510,32 @@ function givePoints() {
         playerCounter++;
         playerPoints.innerHTML = playerCounter.toString();
         playerScored = false;
+        announceWinner();
     }
     else if (comScored == true) {
         comCounter++;
         comPoints.innerHTML = comCounter.toString();
         comScored = false;
+        announceWinner();
+    }
+}
+function announceWinner() {
+    if (availableCards.length <= 0) {
+        if (playerCounter > comCounter) {
+            setTimeout(function () {
+                alert("You have won the Game! Congrats!");
+            }, 1000);
+        }
+        else if (comCounter > playerCounter) {
+            setTimeout(function () {
+                alert("The Computer has won the Game... That was a weak performance...");
+            }, 1000);
+        }
+        else if (comCounter == playerCounter) {
+            setTimeout(function () {
+                alert("It's a tie game!");
+            }, 1000);
+        }
     }
 }
 //Neues Game starten: booleans und numbers auf ursprünglichen Wert zurücksetzen; divs leer räumen; divs wieder verstecken; Farbe des zuvor geklickten Buttons zurück zu Standard
@@ -496,6 +546,9 @@ function nextGame() {
     comsTurn = true;
     if (comvcom == true) {
         com1turn = true;
+    }
+    if (playervplayer == true) {
+        player1turn = true;
     }
     cardDeck = [];
     giveClass = 0;
