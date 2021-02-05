@@ -1,5 +1,4 @@
-//Var-Elemente sammeln:
-// Warum werden 4 Karten aufgedeckt wenn nur noch 4 da sind?!
+//const-variablen (HTMLElemente) sammeln:
 const stufe1: HTMLInputElement = document.querySelector("#einfach");
 const stufe2: HTMLElement = document.querySelector("#normal");
 const stufe3: HTMLElement = document.querySelector("#schwer");
@@ -18,6 +17,7 @@ const comvscom: HTMLElement = document.querySelector("#h23");
 var comvcom: boolean = false;
 var com1turn: boolean;
 var playervplayer: boolean = false;
+var playervcom: boolean = false;
 var player1turn: boolean;
 var preventTheOther: boolean = false;
 var comsTurn: boolean = true;
@@ -30,6 +30,7 @@ comvscom.addEventListener("click", function(): void {
     document.querySelector("#player").innerHTML = "Com1";
     document.querySelector("#com").innerHTML = "Com2";
     playervplayer = false;
+    playervcom = false;
     com1turn = true;
     comvcom = true;
     comsTurn = true;
@@ -42,7 +43,10 @@ p1vscom.addEventListener("click", function(): void {
     document.querySelector("#com").innerHTML = "Com";
     comvcom = false;
     playervplayer = false;
+    playervcom = true;
     comsTurn = true;
+    document.querySelector("#com").setAttribute("style", "text-decoration: underline");
+    document.querySelector("#player").setAttribute("style", "text-decoration: none");
 });
 p1vsp2.addEventListener("click", function(): void {
     p1vscom.setAttribute("style", "text-decoration: none");
@@ -51,8 +55,11 @@ p1vsp2.addEventListener("click", function(): void {
     document.querySelector("#player").innerHTML = "Player 1";
     document.querySelector("#com").innerHTML = "Player 2";
     comvcom = false;
+    playervcom = false;
     playervplayer = true;
     player1turn = true;
+    document.querySelector("#player").setAttribute("style", "text-decoration: underline");
+    document.querySelector("#com").setAttribute("style", "text-decoration: none"); 
     comsTurn = false;
 });
 
@@ -222,6 +229,11 @@ function pushCardsToDom(): void {
         newImg.addEventListener("click", function(): void {
             if (comsTurn == false) {
                 if (firstFlipped == false || secondFlipped == false) {
+                    if (playervplayer == true) {
+                        if (player1turn == false) {
+                            preventTheOther = true;
+                        }
+                    }
                     newImg.src = cardDeck[parseFloat(newImg.className)].source;
                     storeSource.push(newImg.src);
                     storeSelected.push(newImg);
@@ -255,8 +267,20 @@ function pushCardsToDom(): void {
                         }
                         storeSelected[0].classList.add("invisible");
                         storeSelected[1].classList.add("invisible");
-                        playerScored = true;
-                        givePoints();
+                        if (playervplayer == false) {
+                            playerScored = true;
+                            givePoints();
+                        }
+                        else {
+                            if (player1turn == true) {
+                                playerScored = true;
+                                givePoints();
+                            }
+                            else if (player1turn == false) {
+                                comScored = true;
+                                givePoints();
+                            }
+                        }
                         storeSelected.length = 0;
                         storeSource.length = 0;
                         storeClassName.length = 0;
@@ -277,9 +301,26 @@ function pushCardsToDom(): void {
                         secondFlipped = false;
                         if (playervplayer == false) {
                             comsTurn = true;
+                            document.querySelector("#com").setAttribute("style", "text-decoration: underline");
+                            document.querySelector("#player").setAttribute("style", "text-decoration: none");
                             comPlays();
                         }
-                    }, 3000);
+                        else {
+                            if (player1turn == true) {
+                                document.querySelector("#player").setAttribute("style", "text-decoration: none");
+                                document.querySelector("#com").setAttribute("style", "text-decoration: underline");
+                            } else if (player1turn == false) {
+                                document.querySelector("#com").setAttribute("style", "text-decoration: none");
+                                document.querySelector("#player").setAttribute("style", "text-decoration: underline"); 
+                            }
+                            if (player1turn == true) {
+                                player1turn = false;
+                            }
+                            else if (preventTheOther == true) {
+                                player1turn = true;
+                            }
+                        }
+                    }, 3000);                   
                 }
             }
         }
@@ -295,6 +336,11 @@ function pushCardsToDom(): void {
         newImgMedium.addEventListener("click", function(): void {
             if (comsTurn == false) {
                 if (firstFlipped == false || secondFlipped == false) {
+                    if (playervplayer == true) {
+                        if (player1turn == false) {
+                            preventTheOther = true;
+                        }
+                    }
                     newImgMedium.src = cardDeck[parseFloat(newImgMedium.className)].source;
                     storeSource.push(newImgMedium.src);
                     storeSelected.push(newImgMedium);
@@ -327,8 +373,20 @@ function pushCardsToDom(): void {
                         }
                         storeSelected[0].classList.add("invisible");
                         storeSelected[1].classList.add("invisible");
-                        playerScored = true;
-                        givePoints();
+                        if (playervplayer == false) {
+                            playerScored = true;
+                            givePoints();
+                        }
+                        else {
+                            if (player1turn == true) {
+                                playerScored = true;
+                                givePoints();
+                            }
+                            else if (player1turn == false) {
+                                comScored = true;
+                                givePoints();
+                            }
+                        }
                         storeSelected.length = 0;
                         storeSource.length = 0;
                         firstFlipped = false;
@@ -347,7 +405,24 @@ function pushCardsToDom(): void {
                         secondFlipped = false;
                         if (playervplayer == false) {
                             comsTurn = true;
+                            document.querySelector("#com").setAttribute("style", "text-decoration: underline");
+                            document.querySelector("#player").setAttribute("style", "text-decoration: none");
                             comPlays();
+                        }
+                        else {
+                            if (player1turn == true) {
+                                document.querySelector("#player").setAttribute("style", "text-decoration: none");
+                                document.querySelector("#com").setAttribute("style", "text-decoration: underline");
+                            } else if (player1turn == false) {
+                                document.querySelector("#com").setAttribute("style", "text-decoration: none");
+                                document.querySelector("#player").setAttribute("style", "text-decoration: underline"); 
+                            }
+                            if (player1turn == true) {
+                                player1turn = false;
+                            }
+                            else if (preventTheOther == true) {
+                                player1turn = true;
+                            }
                         }
                     }, 3000);
                 }
@@ -365,6 +440,11 @@ function pushCardsToDom(): void {
         newImgHard.addEventListener("click", function(): void {
             if (comsTurn == false) {
                 if (firstFlipped == false || secondFlipped == false) {
+                    if (playervplayer == true) {
+                        if (player1turn == false) {
+                            preventTheOther = true;
+                        }
+                    }
                     newImgHard.src = cardDeck[parseFloat(newImgHard.className)].source;
                     storeSource.push(newImgHard.src);
                     storeSelected.push(newImgHard);
@@ -397,8 +477,20 @@ function pushCardsToDom(): void {
                         }
                         storeSelected[0].classList.add("invisible");
                         storeSelected[1].classList.add("invisible");
-                        playerScored = true;
-                        givePoints();
+                        if (playervplayer == false) {
+                            playerScored = true;
+                            givePoints();
+                        }
+                        else {
+                            if (player1turn == true) {
+                                playerScored = true;
+                                givePoints();
+                            }
+                            else if (player1turn == false) {
+                                comScored = true;
+                                givePoints();
+                            }
+                        }
                         storeSelected.length = 0;
                         storeSource.length = 0;
                         firstFlipped = false;
@@ -417,7 +509,24 @@ function pushCardsToDom(): void {
                         secondFlipped = false;
                         if (playervplayer == false) {
                             comsTurn = true;
+                            document.querySelector("#com").setAttribute("style", "text-decoration: underline");
+                            document.querySelector("#player").setAttribute("style", "text-decoration: none");
                             comPlays();
+                        }
+                        else {
+                            if (player1turn == true) {
+                                document.querySelector("#player").setAttribute("style", "text-decoration: none");
+                                document.querySelector("#com").setAttribute("style", "text-decoration: underline");
+                            } else if (player1turn == false) {
+                                document.querySelector("#com").setAttribute("style", "text-decoration: none");
+                                document.querySelector("#player").setAttribute("style", "text-decoration: underline"); 
+                            }
+                            if (player1turn == true) {
+                                player1turn = false;
+                            }
+                            else if (preventTheOther == true) {
+                                player1turn = true;
+                            }
                         }
                     }, 3000);
                 }
@@ -521,6 +630,8 @@ function comPlays(): void {
         else {
             setTimeout(function(): void {
                 comsTurn = false;
+                document.querySelector("#com").setAttribute("style", "text-decoration: none");
+                document.querySelector("#player").setAttribute("style", "text-decoration: underline");
             }, 4500);
         }
     }
@@ -569,8 +680,14 @@ function nextGame(): void {
     if (comvcom == true) {
         com1turn = true;
     }
-    if (playervplayer == true) {
+    else if (playervplayer == true) {
         player1turn = true;
+        document.querySelector("#com").setAttribute("style", "text-decoration: none");
+        document.querySelector("#player").setAttribute("style", "text-decoration: underline"); 
+    }
+    else if (playervcom == true) {
+        document.querySelector("#com").setAttribute("style", "text-decoration: underline");
+        document.querySelector("#player").setAttribute("style", "text-decoration: none"); 
     }
     cardDeck = [];
     giveClass = 0;
@@ -581,7 +698,7 @@ function nextGame(): void {
     playerCounter = 0;
     playerPoints.innerHTML = playerCounter.toString();
     comCounter = 0;
-    comPoints.innerHTML = comCounter.toString();
+    comPoints.innerHTML = comCounter.toString(); 
     if (easy == true) {
         easyContainer.innerHTML = "";
         easyContainer.classList.add("isHidden");

@@ -1,5 +1,4 @@
-//Var-Elemente sammeln:
-// Warum werden 4 Karten aufgedeckt wenn nur noch 4 da sind?!
+//const-variablen (HTMLElemente) sammeln:
 var stufe1 = document.querySelector("#einfach");
 var stufe2 = document.querySelector("#normal");
 var stufe3 = document.querySelector("#schwer");
@@ -17,6 +16,7 @@ var comvscom = document.querySelector("#h23");
 var comvcom = false;
 var com1turn;
 var playervplayer = false;
+var playervcom = false;
 var player1turn;
 var preventTheOther = false;
 var comsTurn = true;
@@ -29,6 +29,7 @@ comvscom.addEventListener("click", function () {
     document.querySelector("#player").innerHTML = "Com1";
     document.querySelector("#com").innerHTML = "Com2";
     playervplayer = false;
+    playervcom = false;
     com1turn = true;
     comvcom = true;
     comsTurn = true;
@@ -41,7 +42,10 @@ p1vscom.addEventListener("click", function () {
     document.querySelector("#com").innerHTML = "Com";
     comvcom = false;
     playervplayer = false;
+    playervcom = true;
     comsTurn = true;
+    document.querySelector("#com").setAttribute("style", "text-decoration: underline");
+    document.querySelector("#player").setAttribute("style", "text-decoration: none");
 });
 p1vsp2.addEventListener("click", function () {
     p1vscom.setAttribute("style", "text-decoration: none");
@@ -50,8 +54,11 @@ p1vsp2.addEventListener("click", function () {
     document.querySelector("#player").innerHTML = "Player 1";
     document.querySelector("#com").innerHTML = "Player 2";
     comvcom = false;
+    playervcom = false;
     playervplayer = true;
     player1turn = true;
+    document.querySelector("#player").setAttribute("style", "text-decoration: underline");
+    document.querySelector("#com").setAttribute("style", "text-decoration: none");
     comsTurn = false;
 });
 //Quelle für die Kartenrückseiten:
@@ -207,6 +214,11 @@ function pushCardsToDom() {
         newImg_1.addEventListener("click", function () {
             if (comsTurn == false) {
                 if (firstFlipped == false || secondFlipped == false) {
+                    if (playervplayer == true) {
+                        if (player1turn == false) {
+                            preventTheOther = true;
+                        }
+                    }
                     newImg_1.src = cardDeck[parseFloat(newImg_1.className)].source;
                     storeSource.push(newImg_1.src);
                     storeSelected.push(newImg_1);
@@ -240,8 +252,20 @@ function pushCardsToDom() {
                         }
                         storeSelected[0].classList.add("invisible");
                         storeSelected[1].classList.add("invisible");
-                        playerScored = true;
-                        givePoints();
+                        if (playervplayer == false) {
+                            playerScored = true;
+                            givePoints();
+                        }
+                        else {
+                            if (player1turn == true) {
+                                playerScored = true;
+                                givePoints();
+                            }
+                            else if (player1turn == false) {
+                                comScored = true;
+                                givePoints();
+                            }
+                        }
                         storeSelected.length = 0;
                         storeSource.length = 0;
                         storeClassName.length = 0;
@@ -262,7 +286,25 @@ function pushCardsToDom() {
                         secondFlipped = false;
                         if (playervplayer == false) {
                             comsTurn = true;
+                            document.querySelector("#com").setAttribute("style", "text-decoration: underline");
+                            document.querySelector("#player").setAttribute("style", "text-decoration: none");
                             comPlays();
+                        }
+                        else {
+                            if (player1turn == true) {
+                                document.querySelector("#player").setAttribute("style", "text-decoration: none");
+                                document.querySelector("#com").setAttribute("style", "text-decoration: underline");
+                            }
+                            else if (player1turn == false) {
+                                document.querySelector("#com").setAttribute("style", "text-decoration: none");
+                                document.querySelector("#player").setAttribute("style", "text-decoration: underline");
+                            }
+                            if (player1turn == true) {
+                                player1turn = false;
+                            }
+                            else if (preventTheOther == true) {
+                                player1turn = true;
+                            }
                         }
                     }, 3000);
                 }
@@ -279,6 +321,11 @@ function pushCardsToDom() {
         newImgMedium_1.addEventListener("click", function () {
             if (comsTurn == false) {
                 if (firstFlipped == false || secondFlipped == false) {
+                    if (playervplayer == true) {
+                        if (player1turn == false) {
+                            preventTheOther = true;
+                        }
+                    }
                     newImgMedium_1.src = cardDeck[parseFloat(newImgMedium_1.className)].source;
                     storeSource.push(newImgMedium_1.src);
                     storeSelected.push(newImgMedium_1);
@@ -311,8 +358,20 @@ function pushCardsToDom() {
                         }
                         storeSelected[0].classList.add("invisible");
                         storeSelected[1].classList.add("invisible");
-                        playerScored = true;
-                        givePoints();
+                        if (playervplayer == false) {
+                            playerScored = true;
+                            givePoints();
+                        }
+                        else {
+                            if (player1turn == true) {
+                                playerScored = true;
+                                givePoints();
+                            }
+                            else if (player1turn == false) {
+                                comScored = true;
+                                givePoints();
+                            }
+                        }
                         storeSelected.length = 0;
                         storeSource.length = 0;
                         firstFlipped = false;
@@ -331,7 +390,25 @@ function pushCardsToDom() {
                         secondFlipped = false;
                         if (playervplayer == false) {
                             comsTurn = true;
+                            document.querySelector("#com").setAttribute("style", "text-decoration: underline");
+                            document.querySelector("#player").setAttribute("style", "text-decoration: none");
                             comPlays();
+                        }
+                        else {
+                            if (player1turn == true) {
+                                document.querySelector("#player").setAttribute("style", "text-decoration: none");
+                                document.querySelector("#com").setAttribute("style", "text-decoration: underline");
+                            }
+                            else if (player1turn == false) {
+                                document.querySelector("#com").setAttribute("style", "text-decoration: none");
+                                document.querySelector("#player").setAttribute("style", "text-decoration: underline");
+                            }
+                            if (player1turn == true) {
+                                player1turn = false;
+                            }
+                            else if (preventTheOther == true) {
+                                player1turn = true;
+                            }
                         }
                     }, 3000);
                 }
@@ -348,6 +425,11 @@ function pushCardsToDom() {
         newImgHard_1.addEventListener("click", function () {
             if (comsTurn == false) {
                 if (firstFlipped == false || secondFlipped == false) {
+                    if (playervplayer == true) {
+                        if (player1turn == false) {
+                            preventTheOther = true;
+                        }
+                    }
                     newImgHard_1.src = cardDeck[parseFloat(newImgHard_1.className)].source;
                     storeSource.push(newImgHard_1.src);
                     storeSelected.push(newImgHard_1);
@@ -380,8 +462,20 @@ function pushCardsToDom() {
                         }
                         storeSelected[0].classList.add("invisible");
                         storeSelected[1].classList.add("invisible");
-                        playerScored = true;
-                        givePoints();
+                        if (playervplayer == false) {
+                            playerScored = true;
+                            givePoints();
+                        }
+                        else {
+                            if (player1turn == true) {
+                                playerScored = true;
+                                givePoints();
+                            }
+                            else if (player1turn == false) {
+                                comScored = true;
+                                givePoints();
+                            }
+                        }
                         storeSelected.length = 0;
                         storeSource.length = 0;
                         firstFlipped = false;
@@ -400,7 +494,25 @@ function pushCardsToDom() {
                         secondFlipped = false;
                         if (playervplayer == false) {
                             comsTurn = true;
+                            document.querySelector("#com").setAttribute("style", "text-decoration: underline");
+                            document.querySelector("#player").setAttribute("style", "text-decoration: none");
                             comPlays();
+                        }
+                        else {
+                            if (player1turn == true) {
+                                document.querySelector("#player").setAttribute("style", "text-decoration: none");
+                                document.querySelector("#com").setAttribute("style", "text-decoration: underline");
+                            }
+                            else if (player1turn == false) {
+                                document.querySelector("#com").setAttribute("style", "text-decoration: none");
+                                document.querySelector("#player").setAttribute("style", "text-decoration: underline");
+                            }
+                            if (player1turn == true) {
+                                player1turn = false;
+                            }
+                            else if (preventTheOther == true) {
+                                player1turn = true;
+                            }
                         }
                     }, 3000);
                 }
@@ -501,6 +613,8 @@ function comPlays() {
         else {
             setTimeout(function () {
                 comsTurn = false;
+                document.querySelector("#com").setAttribute("style", "text-decoration: none");
+                document.querySelector("#player").setAttribute("style", "text-decoration: underline");
             }, 4500);
         }
     }
@@ -547,8 +661,14 @@ function nextGame() {
     if (comvcom == true) {
         com1turn = true;
     }
-    if (playervplayer == true) {
+    else if (playervplayer == true) {
         player1turn = true;
+        document.querySelector("#com").setAttribute("style", "text-decoration: none");
+        document.querySelector("#player").setAttribute("style", "text-decoration: underline");
+    }
+    else if (playervcom == true) {
+        document.querySelector("#com").setAttribute("style", "text-decoration: underline");
+        document.querySelector("#player").setAttribute("style", "text-decoration: none");
     }
     cardDeck = [];
     giveClass = 0;
