@@ -75,6 +75,7 @@ var flipBack = false;
 var playerScored = false;
 var comScored = false;
 var runAgain = false;
+var newGamePossible = false;
 //Arrays für Karten:
 var cardDeck = [];
 //Arrays für das zufällige Aufdecken des Computers:
@@ -164,7 +165,9 @@ stufe3.addEventListener("click", function () {
 });
 //Buttons:
 newGame.addEventListener("click", function () {
-    nextGame();
+    if (newGamePossible == true) {
+        nextGame();
+    }
 });
 //Array durchmischen (wie funktioniert es?):
 function shuffleArray(array) {
@@ -635,6 +638,7 @@ function givePoints() {
 }
 function announceWinner() {
     if (availableCards.length <= 0) {
+        newGamePossible = true;
         if (playerCounter > comCounter) {
             setTimeout(function () {
                 alert("You have won the Game! Congrats!");
@@ -658,6 +662,7 @@ function nextGame() {
     firstFlipped = false;
     secondFlipped = false;
     comsTurn = true;
+    newGamePossible = false;
     if (comvcom == true) {
         com1turn = true;
     }

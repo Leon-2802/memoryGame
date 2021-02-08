@@ -78,6 +78,7 @@ var flipBack: boolean = false;
 var playerScored: boolean = false;
 var comScored: boolean = false;
 var runAgain: boolean = false;
+var newGamePossible: boolean = false;
 
 //Interface für Kartenobjekte:
 interface CardBlueprint {
@@ -177,7 +178,9 @@ stufe3.addEventListener("click", function(): void {
 });
 //Buttons:
 newGame.addEventListener("click", function(): void {
-    nextGame();
+    if (newGamePossible == true) {
+        nextGame();
+    }
 });
 
 //Array durchmischen (wie funktioniert es?):
@@ -654,6 +657,7 @@ function givePoints(): void {
 
 function announceWinner(): void {
     if (availableCards.length <= 0) {
+        newGamePossible = true;
         if (playerCounter > comCounter) {
             setTimeout(function(): void {
                 alert("You have won the Game! Congrats!");
@@ -677,6 +681,7 @@ function nextGame(): void {
     firstFlipped = false;
     secondFlipped = false;
     comsTurn = true;
+    newGamePossible = false;
     if (comvcom == true) {
         com1turn = true;
     }
