@@ -70,6 +70,7 @@ h1 {
     flex-wrap: wrap;
     justify-content: space-evenly;
     grid-row-gap: 20px;
+    color: white;
 }
 #medium-cards {
     display: flex;
@@ -113,6 +114,11 @@ h1 {
 #new-game:hover {
     cursor: pointer;
     color: white;
+}
+
+#announce {
+    color: white;
+    opacity: 0;
 }
 
 a {
