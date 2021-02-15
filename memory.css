@@ -28,20 +28,16 @@ h1 {
 }
 #h21 {
     position: absolute;
-    left: 90%;
+    left: 1100px;
     top: 10px;
     text-decoration: underline;
 }
 #h22 {
     position: absolute;
-    left: 90%;
+    left: 1100px;
     top: 60px;
 }
-#h23 {
-    position: absolute;
-    left: 85%;
-    top: 110px;
-}
+
 #h21:hover {
     cursor: pointer;
 }
@@ -94,33 +90,80 @@ h1 {
 }
 
 /*Buttons und Text unterhalb des Spielfelds:*/
-#unten {
-    display: inline-block;
+
+#announce {
+    color: white;
+    font-size: large;
+    opacity: 0;
+    display: block;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.line2 {
+    position: absolute;
+}
+#player {
+    margin-left: 220px;
+    font-size: large;
+}
+#p-number {
+    margin-left: 295px;
+    color: lightblue;
+    font-size: large;
+}
+#Stufe {
+    margin-left: 399px;
+    font-size: large;
+}
+#einfach {
+    margin-left: 500px;
+}
+#normal {
+    margin-left: 610px;
+}
+#schwer {
+    margin-left: 740px;
+}
+#com {
+    margin-left: 890px;
+    font-size: large;
+}
+#c-number {
+    margin-left: 965px;
+    color: orange;
+    font-size: large;
 }
 
 #einfach:hover{
     cursor: pointer;
-    color: cyan;
+    color: orangered;
 }
 #normal:hover{
     cursor: pointer;
-    color: cyan;
+    color: orangered;
 }
 #schwer:hover{
     cursor: pointer;
-    color: cyan;
+    color: orangered;
 }
 
+#new-game {
+    margin-left: 600px;
+}
 #new-game:hover {
     cursor: pointer;
     color: white;
+    background: rgba(0, 255, 255, 0);
 }
-
-#announce {
-    color: white;
-    opacity: 0;
+footer {
+    margin-top: 20px;
+    padding-bottom: 15px;
+    border-top: 4px solid rgb(230, 230, 230);
 }
-
+#footer {
+    text-align: center;
+}
 a {
     color: blanchedalmond;
 }

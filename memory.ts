@@ -30,8 +30,8 @@ p1vscom.addEventListener("click", function(): void {
         p1vscom.setAttribute("style", "text-decoration: underline");
         p1vsp2.setAttribute("style", "text-decoration: none");
         //InnerHTML der Spielteilnehmer-Anzeige ändern:
-        document.querySelector("#player").innerHTML = "Player";
-        document.querySelector("#com").innerHTML = "Com";
+        document.querySelector("#player").innerHTML = "Player:";
+        document.querySelector("#com").innerHTML = "Com:";
         //Boolean des anderen modus auf false setzen
         playervplayer = false;
         //Boolean des gewählten Modus auf true:
@@ -48,8 +48,8 @@ p1vsp2.addEventListener("click", function(): void {
     if (lockPlaymode == false) {
         p1vscom.setAttribute("style", "text-decoration: none");
         p1vsp2.setAttribute("style", "text-decoration: underline");
-        document.querySelector("#player").innerHTML = "Player 1";
-        document.querySelector("#com").innerHTML = "Player 2";
+        document.querySelector("#player").innerHTML = "Player 1:";
+        document.querySelector("#com").innerHTML = "Player 2:";
         playervcom = false;
         playervplayer = true;
         //Player eins beginnt:
@@ -212,7 +212,7 @@ function createCarddeck(): void {
         //Das Div, wo die Karten reinkommen verliert die Klassen "isHidden" und somit das Atrribut display: none
         easyContainer.classList.remove("isHidden");
         //Der Text des Buttons wird zu cyan gefärbt, um den gewählten Button zu markieren:
-        stufe1.setAttribute("style", "color: cyan");
+        stufe1.setAttribute("style", "color: orangered");
         //Das Boolean zum verhindern, dass ein anderer Schwierigkeitsgrad gewählt wird, wird auf true gesetzt -> Buttons sind gesperrt:
         lockDifficulty = true;
         //Das Karten-Array wird gemischt:
@@ -226,7 +226,7 @@ function createCarddeck(): void {
     else if (medium == true && lockDifficulty == false) {
         //...nur ein anderer Div-Container, angepasst an die 16 Karten
         mediumContainer.classList.remove("isHidden");
-        stufe2.setAttribute("style", "color: cyan");
+        stufe2.setAttribute("style", "color: orangered");
         lockDifficulty = true;
         shuffleArray(cardDeck);
         //...und mehr Durchläufe beim for-loop:
@@ -236,7 +236,7 @@ function createCarddeck(): void {
     }
     else if (hard == true && lockDifficulty == false) {
         hardContainer.classList.remove("isHidden");
-        stufe3.setAttribute("style", "color: cyan");
+        stufe3.setAttribute("style", "color: orangered");
         lockDifficulty = true;
         shuffleArray(cardDeck);
         for (var indexHard: number = 1; indexHard <= 32; indexHard++) {
@@ -634,27 +634,50 @@ function shuffleAvailableCards(array: Array<number>): void {
 }
 
 function comPlays(): void {
-
+    //array mit allen Nummern die gleich zu den Klassennamen der Karten im Spiel sind, wird durchgemischt in der shuffle-Funktion:
     shuffleAvailableCards(availableCards);
-    //Computer zeiht immer die ersten beiden Nummern im Array, durch das Durchmischen wird die Zufälligkeit garantiert.
+    //Computer zeiht immer die ersten beiden Nummern im Array, durch das Durchmischen des Arrays wird die Zufälligkeit garantiert.
     let firstImage: number = availableCards[0];
     let secondImage: number = availableCards[1];
 
+    //Die erste Karte wird durch den Computer aufgedeckt indem er die Quelle des Bildes aus dem StoreImg-Array ändert. In storeImg befinden sich alle Bildelemente die auf dem Feld liegen
+    //Durch die zufällige Zahl aus firstImage wird die ausgewählte Karte umgedreht, also die Quelle geändert.
+    //Das änderen der Quelle ist wie in Nutzerfunktion mit dem Klassennamen der karte, nur das hier das Bild aus StoreImg benutzt wird und mit firstImage die vom Computer gewählte Zahl benutzt
+    //wird:
     storeImg[firstImage].src = cardDeck[parseFloat(storeImg[firstImage].className)].source;
+    //Quelle wird zum Vergleichen der Karten in ein Array gepusht:
     storeSource.push(storeImg[firstImage].src);
+    //die gewählte Karte wird auch in ein Array gepusht:
     storeSelected.push(storeImg[firstImage]);
-    //Zweite Karte, 1 Sekunde später:
+    //Zweite Karte, 1 Sekunde später, gleiche Herangehensweise wie oben:
     setTimeout(function(): void {
         storeImg[secondImage].src = cardDeck[parseFloat(storeImg[secondImage].className)].source;
         storeSource.push(storeImg[secondImage].src);
         storeSelected.push(storeImg[secondImage]);
-        //3 Sekunden nach der ersten Karte wird die Vergleich-Funktion aufgerufen:
-        setTimeout(function(): void {
-            checkPairs();
-        }, 3000);
+        //2 Sekunden nach der zweiten Karte wird die Vergleich-Funktion aufgerufen:
+        if (easy == true) {
+            setTimeout(function(): void {
+                checkPairs();
+            }, 2000);
+        }
+        //Bei Medium nach 1,5
+        else if (medium == true) {
+            setTimeout(function(): void {
+                checkPairs();
+            }, 1500);
+        }
+        //und bei Hard nach 1 Sekunde
+        else if (hard == true) {
+            setTimeout(function(): void {
+                checkPairs();
+            }, 1000);
+        }
     },1000);
     function checkPairs(): void {
+        //Karten werden verglichen, wenn die Quellen gleich sind (=gleiche Vorderseite) ist es ein Paar:
         if (storeSource[0] === storeSource[1]) {
+            //Erst werden die vom Computer gewählten Zahlen aus dem availableCards Array gestrichen, so kann der Computer nicht die schon entdeckten Paare wieder aufdecken:
+            //Da firstImage außerhalb der Funktion liegt wird der Klassenname der aufgedeckten Karte verwendet, welche gleich den vom Computer gewählten Zahlen ist:
             const index: number = availableCards.indexOf(parseFloat(storeSelected[0].className));
             if (index > -1) {
                 availableCards.splice(index, 1);
@@ -663,6 +686,7 @@ function comPlays(): void {
             if (index2 > -1) {
                 availableCards.splice(index2, 1);
             }
+            //Die gespeicherten Bilder werden entfernt, indem sie visibility: hidden bekommen:
             storeSelected[0].classList.add("invisible");
             storeSelected[1].classList.add("invisible");
             comScored = true;
@@ -674,10 +698,12 @@ function comPlays(): void {
             }, 1000);
         }
         else {
+            //die gewählten Bilder bekommen wieder ihre Rückseite als Quelle und werden so umgedreht:
             storeSelected[0].src = backsideSource; 
             storeSelected[1].src = backsideSource; 
             playersTurn(); 
         }
+        //Arrays wieder zurücksetzen für den nächsten Durchlauf:
         storeSelected.length = 0;
         storeSource.length = 0;
     }
@@ -744,7 +770,6 @@ function nextGame(): void {
     lockDifficulty = false;
     firstFlipped = false;
     secondFlipped = false;
-    comsTurn = true;
     lockPlaymode = false;
     if (playervplayer == true) {
         player1turn = true;
@@ -752,6 +777,7 @@ function nextGame(): void {
         document.querySelector("#player").setAttribute("style", "text-decoration: underline"); 
     }
     else if (playervplayer == false) {
+        comsTurn = true;
         document.querySelector("#com").setAttribute("style", "text-decoration: underline");
         document.querySelector("#player").setAttribute("style", "text-decoration: none"); 
     }
