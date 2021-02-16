@@ -14,7 +14,7 @@ var announce = document.querySelector("#announce");
 //Spieltyp wählen:
 //Booleans für das Wählen des Spieltyps:
 var playervplayer = false;
-var playervcom = false;
+var playervcom = true;
 var player1turn;
 var preventTheOther = false;
 var comsTurn = true;
@@ -78,6 +78,8 @@ var availableCards = [];
 var storeImg = [];
 //Bildquellen der zwei aufgedeckten Karten zum vergleichen sammeln:
 var storeSource = [];
+//Für Medium und Hard wird der Key zum Vergleichen benutzt, da es hier keine gleichen Quellen gibt:
+var storeKey = [];
 //die ausgewählten Bilder als images sammeln um dann die Quellen zu ändern um die Karten aufzudecken:
 var storeSelected = [];
 //Class-Names aller Bilder sammeln um auf sie zurückgreifen zu können beim Aufdecken:
@@ -116,7 +118,7 @@ stufe1.addEventListener("click", function () {
                 cardDeck.push(addCard);
             }
         }
-        //Für den Computer wird ein Array mit den Nummern der später festgelegten Classnames der Karten erstellt:
+        //Für den Computer wird ein Array mit den Nummern der später festgelegten Classnames der Karten erstellt, die der Computer verwenden wird:
         for (var index = 0; index <= 7; index++) {
             availableCards.push(index);
         }
@@ -130,20 +132,30 @@ stufe1.addEventListener("click", function () {
         }
     }
 });
-//Für die anderen Stufen ist alles gleich, nur unterscheidet sich die Anzahl der Karten, der Ordner der Bildquellen und das Boolean des Schwierigkeitsgrads:
+//Für die anderen Stufen ist fast alles gleich, doch gibt es ein Paar Unterschiede:
 stufe2.addEventListener("click", function () {
     if (lockDifficulty == false) {
+        //Natürlich muss ein anderes Boolean für die verwendet werden, damit der richtige Teil der Funktion durchläuft:
         medium = true;
         lockPlaymode = true;
-        for (var index = 1; index <= 2; index++) {
-            for (var index_2 = 1; index_2 <= 8; index_2++) {
-                var addCard = {
-                    source: "images/medium-mode-paare/paar" + index_2 + ".jpg",
-                    key: index_2
-                };
-                cardDeck.push(addCard);
-            }
+        //Hier geht nicht der gleiche For-Loop 2 Mal durch, sondern braucht es zwei verschiedene For-Loops, da die Paare in zwei Ordner aufgeteilt sind, weil ich die Namen der Bilder
+        //gleich halten möchte, die Bilder aber unterschiedlich sind aufgrund der EIA-Sätze.
+        //So kann ich weiterhin mit dem Index arbeiten und habe die Bilder zudem übersichtlich auf zwei Ordner aufgeteilt:
+        for (var index = 1; index <= 8; index++) {
+            var addCard = {
+                source: "images/medium-mode-paare/paar" + index + ".jpg",
+                key: index
+            };
+            cardDeck.push(addCard);
         }
+        for (var index = 1; index <= 8; index++) {
+            var addCard = {
+                source: "images/medium-mode-paare/zweiteHaelfte/paar" + index + ".jpg",
+                key: index
+            };
+            cardDeck.push(addCard);
+        }
+        //Natürlich muss der Computer mit 16 Karten-Indikatoren arbeiten, anstatt mit 8 wie bei Easy:
         for (var index = 0; index <= 15; index++) {
             availableCards.push(index);
         }
@@ -155,18 +167,24 @@ stufe2.addEventListener("click", function () {
         }
     }
 });
+//Hier ist alles gleich wie bei stufe2, nur sind es eben zweimal 16 Karten bei den For Loops und 32 Nummern für das availableCards-Array:
 stufe3.addEventListener("click", function () {
     if (lockDifficulty == false) {
         hard = true;
         lockPlaymode = true;
-        for (var index = 1; index <= 2; index++) {
-            for (var index_3 = 1; index_3 <= 16; index_3++) {
-                var addCard = {
-                    source: "images/hard-mode-paare/paar" + index_3 + ".jpg",
-                    key: index_3
-                };
-                cardDeck.push(addCard);
-            }
+        for (var index = 1; index <= 16; index++) {
+            var addCard = {
+                source: "images/hard-mode-paare/paar" + index + ".jpg",
+                key: index
+            };
+            cardDeck.push(addCard);
+        }
+        for (var index = 1; index <= 16; index++) {
+            var addCard = {
+                source: "images/hard-mode-paare/zweiteHaelfte/paar" + index + ".jpg",
+                key: index
+            };
+            cardDeck.push(addCard);
         }
         for (var index = 0; index <= 31; index++) {
             availableCards.push(index);
@@ -194,9 +212,11 @@ function shuffleArray(array) {
 function createCarddeck() {
     //Passend zur gewählten Stufe wird einer code-Blöcke ausgeführt:
     if (easy == true && lockDifficulty == false) {
-        //Das Div, wo die Karten reinkommen verliert die Klassen "isHidden" und somit das Atrribut display: none
+        //Der Erklärtext wird entfernt
+        easyContainer.innerHTML = "";
+        //Für den Fall, dass zu einem späteren Punkt der easy-Mode gewählt wird muss an das Div wieder hervorholen, da es ja in diesem Fall schon versteckt wurde:
         easyContainer.classList.remove("isHidden");
-        //Der Text des Buttons wird zu cyan gefärbt, um den gewählten Button zu markieren:
+        //Der Text des Buttons wird zu orangerot gefärbt, um den gewählten Button zu markieren:
         stufe1.setAttribute("style", "color: orangered");
         //Das Boolean zum verhindern, dass ein anderer Schwierigkeitsgrad gewählt wird, wird auf true gesetzt -> Buttons sind gesperrt:
         lockDifficulty = true;
@@ -209,7 +229,11 @@ function createCarddeck() {
     }
     //Gleiches bei den anderen Stufen..
     else if (medium == true && lockDifficulty == false) {
-        //...nur ein anderer Div-Container, angepasst an die 16 Karten
+        //...nur muss man den easyContainer verstecken und den Erklärtext entfernen für den Fall das nach dem Starten direkt die Medium-Stufe gewählt wird:
+        easyContainer.innerHTML = "";
+        easyContainer.classList.add("isHidden");
+        //...und ein anderer Div-Container wird gebraucht, angepasst an die 16 Karten
+        //+ das Div, wo die Karten reinkommen verliert die Klassen "isHidden" und somit das Atrribut display: none
         mediumContainer.classList.remove("isHidden");
         stufe2.setAttribute("style", "color: orangered");
         lockDifficulty = true;
@@ -220,6 +244,8 @@ function createCarddeck() {
         }
     }
     else if (hard == true && lockDifficulty == false) {
+        easyContainer.innerHTML = "";
+        easyContainer.classList.add("isHidden");
         hardContainer.classList.remove("isHidden");
         stufe3.setAttribute("style", "color: orangered");
         lockDifficulty = true;
@@ -417,14 +443,14 @@ function pushCardsToDom() {
                         }
                     }
                     newImgMedium_1.src = cardDeck[parseFloat(newImgMedium_1.className)].source;
-                    storeSource.push(newImgMedium_1.src);
+                    storeKey.push(cardDeck[parseFloat(newImgMedium_1.className)].key);
                     storeSelected.push(newImgMedium_1);
                     if (firstFlipped == true) {
                         secondFlipped = true;
                         if (storeSelected[0].className === storeSelected[1].className) {
                             secondFlipped = false;
                             storeSelected.splice(1, 1);
-                            storeSource.splice(1, 1);
+                            storeKey.splice(1, 1);
                         }
                         else if (storeSelected[0].className != storeSelected[1].className) {
                             checkForPairsMedium();
@@ -436,7 +462,7 @@ function pushCardsToDom() {
         });
         function checkForPairsMedium() {
             if (firstFlipped == true && secondFlipped == true) {
-                if (storeSource[0] === storeSource[1]) {
+                if (storeKey[0] == storeKey[1]) {
                     setTimeout(function () {
                         var index = availableCards.indexOf(parseFloat(storeSelected[0].className));
                         if (index > -1) {
@@ -463,7 +489,7 @@ function pushCardsToDom() {
                             }
                         }
                         storeSelected.length = 0;
-                        storeSource.length = 0;
+                        storeKey.length = 0;
                         firstFlipped = false;
                         secondFlipped = false;
                     }, 2000);
@@ -475,7 +501,7 @@ function pushCardsToDom() {
                     }, 2000);
                     setTimeout(function () {
                         storeSelected.length = 0;
-                        storeSource.length = 0;
+                        storeKey.length = 0;
                         firstFlipped = false;
                         secondFlipped = false;
                         if (playervplayer == false) {
@@ -521,14 +547,14 @@ function pushCardsToDom() {
                         }
                     }
                     newImgHard_1.src = cardDeck[parseFloat(newImgHard_1.className)].source;
-                    storeSource.push(newImgHard_1.src);
+                    storeKey.push(cardDeck[parseFloat(newImgHard_1.className)].key);
                     storeSelected.push(newImgHard_1);
                     if (firstFlipped == true) {
                         secondFlipped = true;
                         if (storeSelected[0].className === storeSelected[1].className) {
                             secondFlipped = false;
                             storeSelected.splice(1, 1);
-                            storeSource.splice(1, 1);
+                            storeKey.splice(1, 1);
                         }
                         else if (storeSelected[0].className != storeSelected[1].className) {
                             checkForPairsHard();
@@ -540,7 +566,7 @@ function pushCardsToDom() {
         });
         function checkForPairsHard() {
             if (firstFlipped == true && secondFlipped == true) {
-                if (storeSource[0] === storeSource[1]) {
+                if (storeKey[0] == storeKey[1]) {
                     setTimeout(function () {
                         var index = availableCards.indexOf(parseFloat(storeSelected[0].className));
                         if (index > -1) {
@@ -567,7 +593,7 @@ function pushCardsToDom() {
                             }
                         }
                         storeSelected.length = 0;
-                        storeSource.length = 0;
+                        storeKey.length = 0;
                         firstFlipped = false;
                         secondFlipped = false;
                     }, 2000);
@@ -579,7 +605,7 @@ function pushCardsToDom() {
                     }, 2000);
                     setTimeout(function () {
                         storeSelected.length = 0;
-                        storeSource.length = 0;
+                        storeKey.length = 0;
                         firstFlipped = false;
                         secondFlipped = false;
                         if (playervplayer == false) {
@@ -629,14 +655,14 @@ function comPlays() {
     //Das änderen der Quelle ist wie in Nutzerfunktion mit dem Klassennamen der karte, nur das hier das Bild aus StoreImg benutzt wird und mit firstImage die vom Computer gewählte Zahl benutzt
     //wird:
     storeImg[firstImage].src = cardDeck[parseFloat(storeImg[firstImage].className)].source;
-    //Quelle wird zum Vergleichen der Karten in ein Array gepusht:
-    storeSource.push(storeImg[firstImage].src);
+    //Key aus dem ObjekArray der Karten wird zum Vergleichen der Karten in ein Array gepusht:
+    storeKey.push(cardDeck[parseFloat(storeImg[firstImage].className)].key);
     //die gewählte Karte wird auch in ein Array gepusht:
     storeSelected.push(storeImg[firstImage]);
     //Zweite Karte, 1 Sekunde später, gleiche Herangehensweise wie oben:
     setTimeout(function () {
         storeImg[secondImage].src = cardDeck[parseFloat(storeImg[secondImage].className)].source;
-        storeSource.push(storeImg[secondImage].src);
+        storeKey.push(cardDeck[parseFloat(storeImg[secondImage].className)].key);
         storeSelected.push(storeImg[secondImage]);
         //2 Sekunden nach der zweiten Karte wird die Vergleich-Funktion aufgerufen:
         if (easy == true) {
@@ -658,8 +684,8 @@ function comPlays() {
         }
     }, 1000);
     function checkPairs() {
-        //Karten werden verglichen, wenn die Quellen gleich sind (=gleiche Vorderseite) ist es ein Paar:
-        if (storeSource[0] === storeSource[1]) {
+        //Karten werden verglichen, wenn die Keys gleich sind (=gleiche Vorderseite) ist es ein Paar:
+        if (storeKey[0] == storeKey[1]) {
             //Erst werden die vom Computer gewählten Zahlen aus dem availableCards Array gestrichen, so kann der Computer nicht die schon entdeckten Paare wieder aufdecken:
             //Da firstImage außerhalb der Funktion liegt wird der Klassenname der aufgedeckten Karte verwendet, welche gleich den vom Computer gewählten Zahlen ist:
             var index = availableCards.indexOf(parseFloat(storeSelected[0].className));
@@ -677,7 +703,7 @@ function comPlays() {
             givePoints();
             setTimeout(function () {
                 storeSelected.length = 0;
-                storeSource.length = 0;
+                storeKey.length = 0;
                 comPlays();
             }, 1000);
         }
@@ -689,7 +715,7 @@ function comPlays() {
         }
         //Arrays wieder zurücksetzen für den nächsten Durchlauf:
         storeSelected.length = 0;
-        storeSource.length = 0;
+        storeKey.length = 0;
     }
     function playersTurn() {
         // Spieler wieder dran:
@@ -718,11 +744,13 @@ function announceWinner() {
             setTimeout(function () {
                 if (playervplayer == false) {
                     announce.innerHTML = "You've won the game! Congrats!";
-                    announce.setAttribute("style", "opacity: 100%");
+                    announce.style.opacity = "100%";
+                    announce.style.color = "lightblue";
                 }
                 else if (playervplayer == true) {
                     announce.innerHTML = "Player 1 has won the game!";
-                    announce.setAttribute("style", "opacity: 100%");
+                    announce.style.opacity = "100%";
+                    announce.style.color = "lightblue";
                 }
             }, 1000);
         }
@@ -730,18 +758,20 @@ function announceWinner() {
             setTimeout(function () {
                 if (playervplayer == false) {
                     announce.innerHTML = "Weak performance... the computer did you dirty!";
-                    announce.setAttribute("style", "opacity: 100%");
+                    announce.style.opacity = "100%";
+                    announce.style.color = "orange";
                 }
                 else if (playervplayer == true) {
                     announce.innerHTML = "Player 2 has won the Game!";
-                    announce.setAttribute("style", "opacity: 100%");
+                    announce.style.opacity = "100%";
+                    announce.style.color = "orange";
                 }
             }, 1000);
         }
         else if (comCounter == playerCounter) {
             setTimeout(function () {
                 announce.innerHTML = "It's a tie game!";
-                announce.setAttribute("style", "opacity: 100%");
+                announce.style.opacity = "100%";
             }, 1000);
         }
     }
@@ -766,29 +796,31 @@ function nextGame() {
     giveClass = 0;
     availableCards.length = 0;
     storeSource.length = 0;
+    storeKey.length = 0;
     storeSelected.length = 0;
     storeImg.length = 0;
     playerCounter = 0;
     playerPoints.innerHTML = playerCounter.toString();
     comCounter = 0;
     comPoints.innerHTML = comCounter.toString();
-    announce.setAttribute("style", "opacity: 0");
+    announce.style.opacity = "0";
+    announce.style.color = "white";
     if (easy == true) {
         easyContainer.innerHTML = "";
         easyContainer.classList.add("isHidden");
-        stufe1.setAttribute("style", "color: black");
+        stufe1.style.color = "black";
         easy = false;
     }
     else if (medium == true) {
         mediumContainer.innerHTML = "";
         mediumContainer.classList.add("isHidden");
-        stufe2.setAttribute("style", "color: black");
+        stufe2.style.color = "black";
         medium = false;
     }
     else if (hard == true) {
         hardContainer.innerHTML = "";
         hardContainer.classList.add("isHidden");
-        stufe3.setAttribute("style", "color: black");
+        stufe3.style.color = "black";
         hard = false;
     }
 }
