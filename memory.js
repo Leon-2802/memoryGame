@@ -696,14 +696,19 @@ function comPlays() {
             if (index2 > -1) {
                 availableCards.splice(index2, 1);
             }
-            //Die gespeicherten Bilder werden entfernt, indem sie visibility: hidden bekommen:
+            //Die gespeicherten, bzw das entdeckte Paar, Bilder werden entfernt, indem sie visibility: hidden bekommen:
             storeSelected[0].classList.add("invisible");
             storeSelected[1].classList.add("invisible");
+            //ComScored = true stellt sicher, dass der Teil der givePoints Funktion durchläuft, der für den Computer gilt:
             comScored = true;
+            //givePoints wird aufgerufen:
             givePoints();
+            //Nach 1 Sekunde ist der Computer noch einmal dran, da nach dem Aufdecken eines Paares ja nochmal aufgedeckt werden darf:
             setTimeout(function () {
+                //natürlich wieder die Arrays zum speichern der Karten und der Keys wieder auf Null setzen, sonst würde das Vergleichen nicht klappen:
                 storeSelected.length = 0;
                 storeKey.length = 0;
+                //nochmal die Funktion aufrufen:
                 comPlays();
             }, 1000);
         }
@@ -711,26 +716,34 @@ function comPlays() {
             //die gewählten Bilder bekommen wieder ihre Rückseite als Quelle und werden so umgedreht:
             storeSelected[0].src = backsideSource;
             storeSelected[1].src = backsideSource;
+            //Players Turn ermöglicht es dem Player wieder Karten auszuwählen, da er jetzt an der Reihe ist:
             playersTurn();
+            //Arrays wieder zurücksetzen für den nächsten Durchlauf (nachdem der Player dran war):
+            storeSelected.length = 0;
+            storeKey.length = 0;
         }
-        //Arrays wieder zurücksetzen für den nächsten Durchlauf:
-        storeSelected.length = 0;
-        storeKey.length = 0;
     }
     function playersTurn() {
-        // Spieler wieder dran:
+        // Spieler wieder dran, da das Boolean, das die Funktion des Players blockt wieder auf False gesetzt wird, und so die Funktion nicht mehr geblockt ist:
         comsTurn = false;
+        //Der player wird als unterstrichen angezeigt, so sieht der Nutzer wer an der Reihe ist:
         document.querySelector("#com").setAttribute("style", "text-decoration: none");
         document.querySelector("#player").setAttribute("style", "text-decoration: underline");
     }
 }
 function givePoints() {
+    //Wenn der Player ein Paar entdeckt hat:
     if (playerScored == true) {
+        //Der Player Counter wird um 1 erhöht..
         playerCounter++;
+        //und der Counter als innerHTML auf die vorherige Zahl der Punkteanzeige überschrieben
         playerPoints.innerHTML = playerCounter.toString();
+        //PlayerScored wieder auf False setzen um Bugs zu verhindern:
         playerScored = false;
+        //Die Funktion zum aufrufen des Siegers wird aufgerufen:
         announceWinner();
     }
+    //Das selbe nur mir den Variablen und HTMLElemet des Computers:
     else if (comScored == true) {
         comCounter++;
         comPoints.innerHTML = comCounter.toString();
@@ -738,13 +751,22 @@ function givePoints() {
         announceWinner();
     }
 }
+//Wird immer nach jeder Punktevergabe aufgerufen...
 function announceWinner() {
+    //..aber nur ausgeführt wenn es keine Elemente mehr im AvailableCards Arrays gibt. Das Array wird bei jedem entdeckten Paar gekürzt, so muss es nach bei Spielende, also wenn keine
+    //Karten mehr vorhanden sind bei Null liegen:
     if (availableCards.length <= 0) {
+        //Wenn der Player1/ Player mehr Punkte hat
         if (playerCounter > comCounter) {
+            //nach einer Sekunde wird...
             setTimeout(function () {
+                //Dem Playmode entsprechend eine Nachricht angezeigt indem...
                 if (playervplayer == false) {
+                    //...Der innerHTML vom announce-Text an den Sieger/Playmode angepasst wird
                     announce.innerHTML = "You've won the game! Congrats!";
+                    //..der Text auf der Webseite sichtbar wird
                     announce.style.opacity = "100%";
+                    //...und die Textfarbe an die Farbe des Players angepasst wird
                     announce.style.color = "lightblue";
                 }
                 else if (playervplayer == true) {
@@ -754,6 +776,7 @@ function announceWinner() {
                 }
             }, 1000);
         }
+        //wenn der Computer/Player 2 mehr Punkte hat passiert das selbe nur eben angepasst an die andere Situation
         else if (comCounter > playerCounter) {
             setTimeout(function () {
                 if (playervplayer == false) {
@@ -768,6 +791,7 @@ function announceWinner() {
                 }
             }, 1000);
         }
+        //bei unentschieden bleibt der Text weiß und es wird ein passender Text angezeigt:
         else if (comCounter == playerCounter) {
             setTimeout(function () {
                 announce.innerHTML = "It's a tie game!";
@@ -778,10 +802,12 @@ function announceWinner() {
 }
 //Neues Game starten: booleans und numbers auf ursprünglichen Wert zurücksetzen; divs leer räumen; divs wieder verstecken; Farbe des zuvor geklickten Buttons zurück zu Standard
 function nextGame() {
+    //Alle verwendeten Booleans zurückgesetzt:
     lockDifficulty = false;
     firstFlipped = false;
     secondFlipped = false;
     lockPlaymode = false;
+    //Abhängig vom Playmode wird das passende Element (Player/Com, player1/player2) unterstrichen und die benötigten Booleans auf den ursprünglichen Wert gesetzt:
     if (playervplayer == true) {
         player1turn = true;
         document.querySelector("#com").setAttribute("style", "text-decoration: none");
@@ -792,6 +818,7 @@ function nextGame() {
         document.querySelector("#com").setAttribute("style", "text-decoration: underline");
         document.querySelector("#player").setAttribute("style", "text-decoration: none");
     }
+    //Alle im Dokument verwendeten Arrays werden auf Null gesetzt:
     cardDeck = [];
     giveClass = 0;
     availableCards.length = 0;
@@ -799,12 +826,17 @@ function nextGame() {
     storeKey.length = 0;
     storeSelected.length = 0;
     storeImg.length = 0;
+    //Die Counter für Player und Com werden wieder auf Null gesetzt und die Anzeige aktualisiert;
     playerCounter = 0;
     playerPoints.innerHTML = playerCounter.toString();
     comCounter = 0;
     comPoints.innerHTML = comCounter.toString();
+    //das Textfeld zum aufrufen des Siegers wird wieder verdeckt: 
     announce.style.opacity = "0";
     announce.style.color = "white";
+    //Passend zum gewählten Schwierigkeitsgrad wird der Container gelehrt (keine Karten mehr) und dann versteckt, um zu vermeiden dass sich beim nächsten Spiel 
+    //die Container im Weg stehen
+    //Dann wird die Farbe des Buttons wieder zum ursprünglichen Schwarz zurückgesetzt und das Boolean der Stufe zurück auf False gesetzt:
     if (easy == true) {
         easyContainer.innerHTML = "";
         easyContainer.classList.add("isHidden");
