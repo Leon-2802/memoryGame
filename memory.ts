@@ -1,3 +1,6 @@
+//!! Ich habe Alessia und Neele öfters bei Fragen geholfen und ihnen vor allem Anfangs bisschen auf die
+//Sprünge geholfen, daher ähnelt sich unser Code an vielen Stellen, kopiert wurde aber nichts!
+
 //const-variablen (HTMLElemente) sammeln:
 const stufe1: HTMLInputElement = document.querySelector("#einfach");
 const stufe2: HTMLElement = document.querySelector("#normal");
